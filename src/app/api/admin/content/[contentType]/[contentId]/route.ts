@@ -32,6 +32,8 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
       await prisma.message.delete({ where: { id: contentId } });
     } else if (contentType === 'notifications') {
       await prisma.notification.delete({ where: { id: contentId } });
+    } else if (contentType === 'reports') {
+      await prisma.report.delete({ where: { id: contentId } });
     } else {
       return NextResponse.json({ error: 'Unsupported content type' }, { status: 400 });
     }

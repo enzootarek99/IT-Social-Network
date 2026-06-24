@@ -31,6 +31,10 @@ model User {
   posts            Post[]
   comments         Comment[]
   likes            Like[]
+  savedPosts       SavedPost[]
+  reports          Report[]                 @relation("ReportReporter")
+  resolvedReports  Report[]                 @relation("ReportResolver")
+  nameVotes        NameVote[]
   followers        Follow[]                 @relation("UserFollowers")
   following        Follow[]                 @relation("UserFollowing")
   opportunities    FreelanceOpportunity[]   @relation("OpportunityAuthor")
@@ -52,9 +56,10 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author   User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments Comment[]
   likes    Like[]
+  saves    SavedPost[]
 }
 
 model Comment {
@@ -70,6 +75,18 @@ model Comment {
 }
 
 model Like {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+}
+
+model SavedPost {
   id        String   @id @default(cuid())
   postId    String
   userId    String
@@ -199,4 +216,33 @@ model Message {
 
   @@index([conversationId, createdAt])
   @@index([senderId])
+}
+
+model Report {
+  id         String    @id @default(cuid())
+  targetType String
+  targetId   String
+  reason     String
+  status     String    @default("OPEN")
+  reporterId String
+  resolverId String?
+  createdAt  DateTime  @default(now())
+  resolvedAt DateTime?
+
+  reporter User  @relation("ReportReporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  resolver User? @relation("ReportResolver", fields: [resolverId], references: [id], onDelete: SetNull)
+
+  @@index([targetType, targetId])
+  @@index([status, createdAt])
+}
+
+model NameVote {
+  id        String   @id @default(cuid())
+  name      String
+  userId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([name, userId])
 }

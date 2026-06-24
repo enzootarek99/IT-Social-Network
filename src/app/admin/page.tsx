@@ -16,6 +16,7 @@ type AdminData = {
     conversationCount: number;
     messageCount: number;
     notificationCount: number;
+    reportCount: number;
   };
   users: Array<AuthUser & { _count: { posts: number; followers: number; opportunities: number; organizedEvents: number } }>;
   posts: Array<{ id: string; content: string; createdAt: string; author: AuthUser; _count: { comments: number; likes: number } }>;
@@ -25,6 +26,7 @@ type AdminData = {
   conversations: Array<{ id: string; updatedAt: string; participantA: AuthUser; participantB: AuthUser; _count: { messages: number } }>;
   messages: Array<{ id: string; content: string; createdAt: string; sender: AuthUser; conversation: { participantA: AuthUser; participantB: AuthUser } }>;
   notifications: Array<{ id: string; type: string; message: string; createdAt: string; recipient: AuthUser; actor?: AuthUser | null }>;
+  reports: Array<{ id: string; targetType: string; targetId: string; reason: string; status: string; createdAt: string; reporter: AuthUser }>;
 };
 
 const statLabels = {
@@ -36,6 +38,7 @@ const statLabels = {
   conversationCount: 'Conversations',
   messageCount: 'Messages',
   notificationCount: 'Notifications',
+  reportCount: 'Signalements',
 } as const;
 
 export default function AdminPage() {
@@ -394,6 +397,17 @@ export default function AdminPage() {
                   title={truncateText(notification.message, 80)}
                   meta={`${notification.type} · pour ${notification.recipient.firstName} ${notification.recipient.lastName}`}
                   onDelete={() => void deleteContent('notifications', notification.id)}
+                />
+              ))}
+            </AdminContentPanel>
+
+            <AdminContentPanel title="Signalements">
+              {data.reports.map((report) => (
+                <ModerationItem
+                  key={report.id}
+                  title={`${report.targetType} · ${truncateText(report.reason, 70)}`}
+                  meta={`${report.status} · par ${report.reporter.firstName} ${report.reporter.lastName} · ${formatDate(report.createdAt)}`}
+                  onDelete={() => void deleteContent('reports', report.id)}
                 />
               ))}
             </AdminContentPanel>

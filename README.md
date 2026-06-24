@@ -5,6 +5,7 @@ A modern platform for IT professionals, students, freelancers and tech communiti
 ## Features
 
 - **Feed** - Share text/image updates, projects and insights, like/comment, and delete your own posts.
+- **Saved posts and reports** - Save useful posts and report content to moderation.
 - **Global search and dashboard** - Search across the platform and track personal activity.
 - **Profile & CV** - Showcase skills, bio, company, location, experiences, education, portfolio projects and public profile pages.
 - **Network discovery** - Search IT professionals and follow/unfollow profiles.
@@ -14,6 +15,7 @@ A modern platform for IT professionals, students, freelancers and tech communiti
 - **Notifications** - Track follows, comments, applications and event participation.
 - **Private messaging** - Start direct conversations and exchange messages with network members.
 - **Admin panel** - WordPress-style back-office with access to users, posts, comments, missions, events, conversations, messages and notifications.
+- **Naming votes** - Team voting page for platform name proposals.
 - **Authentication** - Register, login, logout and maintain sessions with JWT cookies.
 
 ## Tech Stack
@@ -152,6 +154,7 @@ IT-Social-Network/
 - `GET|POST /api/posts`
 - `PATCH|DELETE /api/posts/[postId]`
 - `POST /api/posts/[postId]/like`
+- `POST /api/posts/[postId]/save`
 - `POST /api/posts/[postId]/comments`
 - `PATCH|DELETE /api/posts/[postId]/comments/[commentId]`
 - `GET|PUT /api/profile`
@@ -170,6 +173,8 @@ IT-Social-Network/
 - `POST /api/conversations/[conversationId]/messages`
 - `GET /api/search`
 - `GET /api/dashboard`
+- `GET|POST /api/name-votes`
+- `POST /api/reports`
 - `GET /api/admin`
 - `PATCH|DELETE /api/admin/users/[userId]`
 - `DELETE /api/admin/content/[contentType]/[contentId]`
@@ -179,6 +184,7 @@ IT-Social-Network/
 - `/` - Home and feed
 - `/dashboard` - Authenticated activity dashboard
 - `/search` - Global search
+- `/name-proposals` - Platform naming proposals and votes
 - `/network` - User discovery and follow/unfollow
 - `/profile` - Authenticated profile editor
 - `/profile/[username]` - Public profile page

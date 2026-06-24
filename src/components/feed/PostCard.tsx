@@ -29,6 +29,7 @@ export function PostCard({ post, onUpdated, onDeleted }: PostCardProps) {
   const [editImageUrl, setEditImageUrl] = useState(post.imageUrl || '');
   const [commentError, setCommentError] = useState<string>();
   const [liked, setLiked] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isCommenting, setIsCommenting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -49,6 +50,46 @@ export function PostCard({ post, onUpdated, onDeleted }: PostCardProps) {
       setLikeCount((current) => current + (data.liked ? 1 : -1));
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const toggleSave = async () => {
+    try {
+      const response = await fetch(`/api/posts/${post.id}/save`, { method: 'POST' });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Sauvegarde impossible');
+      }
+
+      setSaved(data.saved);
+    } catch (err) {
+      setPostError(err instanceof Error ? err.message : 'Sauvegarde impossible');
+    }
+  };
+
+  const reportPost = async () => {
+    const reason = prompt('Pourquoi signaler cette publication ?');
+
+    if (!reason?.trim()) {
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetType: 'post', targetId: post.id, reason }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Signalement impossible');
+      }
+
+      setPostError('Signalement envoyé à la modération.');
+    } catch (err) {
+      setPostError(err instanceof Error ? err.message : 'Signalement impossible');
     }
   };
 
@@ -276,6 +317,24 @@ export function PostCard({ post, onUpdated, onDeleted }: PostCardProps) {
           {liked ? 'Aimé' : 'J’aime'} ({likeCount})
         </button>
         <span>{commentCount} commentaires</span>
+        {isAuthenticated && (
+          <>
+            <button
+              type="button"
+              onClick={() => void toggleSave()}
+              className={`font-semibold ${saved ? 'text-blue-700' : 'text-slate-600 hover:text-blue-700'}`}
+            >
+              {saved ? 'Sauvé' : 'Sauver'}
+            </button>
+            <button
+              type="button"
+              onClick={() => void reportPost()}
+              className="font-semibold text-slate-500 hover:text-red-600"
+            >
+              Signaler
+            </button>
+          </>
+        )}
       </div>
 
       {(comments.length > 0 || isAuthenticated) && (
