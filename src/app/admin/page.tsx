@@ -143,89 +143,129 @@ export default function AdminPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-100 text-slate-900">
+    <main className="min-h-screen bg-[#0a0a0d] text-[#d0d0dc]">
       <div className="flex min-h-screen">
-        <aside className="hidden w-72 shrink-0 bg-slate-950 p-6 text-white lg:block">
-          <Link href="/admin" className="text-2xl font-black">
-            ITSN Admin
-          </Link>
-          <p className="mt-2 text-sm text-slate-400">Back-office séparé</p>
-
-          <nav className="mt-10 space-y-2">
-            {[
-              { href: '/admin', label: 'Tableau de bord' },
-              { href: '/', label: 'Voir le site' },
-              { href: '/dashboard', label: 'Dashboard utilisateur' },
-              { href: '/marketplace', label: 'Missions' },
-              { href: '/events', label: 'Événements' },
-            ].map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="block rounded-2xl px-4 py-3 text-sm font-semibold text-slate-200 hover:bg-white/10"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-
-          <div className="mt-10 rounded-2xl bg-white/10 p-4 text-sm text-slate-300">
-            Connecté en tant que
-            <p className="mt-1 font-semibold text-white">
-              {user?.firstName} {user?.lastName}
-            </p>
+        <aside className="hidden w-64 shrink-0 border-r border-[#1a1a20] bg-[#080809] text-white lg:flex lg:flex-col">
+          <div className="border-b border-[#1a1a20] p-5">
+            <Link href="/admin" className="flex items-center gap-2 font-['Space_Grotesk'] text-lg font-semibold text-[#d0d0dc]">
+              <span className="h-2 w-2 rounded-full bg-[#4f8ef7]" />
+              NexusIT
+              <span className="rounded bg-[#1a1a22] px-2 py-0.5 text-[10px] text-[#555]">Admin</span>
+            </Link>
           </div>
 
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="mt-4 w-full rounded-2xl border border-white/20 px-4 py-3 text-left text-sm font-semibold text-white hover:bg-white/10"
-          >
-            Déconnexion admin
-          </button>
+          <div className="px-3 py-4">
+            <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-[#333]">Général</p>
+            <nav className="space-y-1">
+              {[
+                { href: '/admin', label: 'Dashboard', badge: '' },
+                { href: '#users', label: 'Utilisateurs', badge: String(data?.users.length || 0) },
+                { href: '#content', label: 'Posts', badge: '' },
+                { href: '#moderation', label: 'Modération', badge: String((data?.comments.length || 0) + (data?.messages.length || 0)) },
+              ].map((item, index) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold ${
+                    index === 0 ? 'bg-[#12121a] text-[#d0d0dc]' : 'text-[#666] hover:bg-[#12121a] hover:text-[#d0d0dc]'
+                  }`}
+                >
+                  <span className={index === 0 ? 'text-[#4f8ef7]' : 'text-[#444]'}>●</span>
+                  {item.label}
+                  {item.badge && (
+                    <span className="ml-auto rounded-full bg-[#1d2a40] px-2 py-0.5 text-[10px] text-[#4f8ef7]">{item.badge}</span>
+                  )}
+                </Link>
+              ))}
+            </nav>
+
+            <p className="mt-5 px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-[#333]">Modules</p>
+            <nav className="space-y-1">
+              {[
+                { href: '/marketplace', label: 'Freelance' },
+                { href: '/events', label: 'Événements' },
+                { href: '/messages', label: 'Messages' },
+                { href: '/', label: 'Voir le site' },
+              ].map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="block rounded-lg px-3 py-2 text-xs font-semibold text-[#666] hover:bg-[#12121a] hover:text-[#d0d0dc]"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          <div className="mt-auto border-t border-[#1a1a20] p-5 text-sm text-[#888]">
+            Connecté en tant que
+            <p className="mt-1 font-semibold text-[#d0d0dc]">
+              {user?.firstName} {user?.lastName}
+            </p>
+            <p className="text-xs text-[#444]">Super Admin</p>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="mt-4 w-full rounded-lg border border-[#1e1e24] px-4 py-2 text-left text-xs font-semibold text-[#888] hover:bg-[#12121a] hover:text-[#d0d0dc]"
+            >
+              Déconnexion admin
+            </button>
+          </div>
         </aside>
 
-        <section className="flex-1 px-4 py-8 sm:px-6 lg:px-10">
-          <div className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-white p-5 shadow-soft lg:hidden">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-blue-700">Admin</p>
-              <h1 className="text-2xl font-bold text-slate-900">Back-office</h1>
+        <section className="flex-1 bg-[#0a0a0d]">
+          <div className="border-b border-[#1a1a20] px-5 py-4">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h1 className="font-['Space_Grotesk'] text-xl font-semibold text-[#e8e8f0]">Dashboard</h1>
+                <p className="mt-1 text-xs text-[#555]">Vue d’ensemble · back-office NexusIT</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="hidden rounded-lg border border-[#1e1e24] bg-[#131318] px-4 py-2 text-xs text-[#555] sm:block">
+                  Rechercher...
+                </div>
+                <button className="rounded-lg bg-[#4f8ef7] px-4 py-2 text-xs font-semibold text-white">Export</button>
+              </div>
             </div>
-            <Link href="/" className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">
+          </div>
+
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4 bg-[#0a0a0d] p-5 lg:hidden">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-[#4f8ef7]">Admin</p>
+              <h1 className="text-2xl font-bold text-[#e8e8f0]">Back-office</h1>
+            </div>
+            <Link href="/" className="rounded-full border border-[#1e1e24] px-4 py-2 text-sm font-semibold text-[#888]">
               Site
             </Link>
           </div>
 
-          <p className="text-sm font-semibold uppercase tracking-[0.25em] text-blue-700">Admin</p>
-          <h1 className="mt-2 text-4xl font-bold text-slate-900">Panel administrateur</h1>
-          <p className="mt-4 text-slate-600">
-            Supervisez les utilisateurs, contenus et indicateurs de la plateforme.
-          </p>
-
-          {error && <div className="mt-6 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+          <div className="px-5 pb-8">
+          {error && <div className="mt-6 rounded-xl border border-red-900/40 bg-red-950/40 px-4 py-3 text-sm text-red-300">{error}</div>}
 
           {!data ? (
-            <div className="mt-8 rounded-3xl bg-white p-8 text-center text-slate-500 shadow-soft">
+            <div className="mt-8 rounded-xl border border-[#1a1a20] bg-[#0f0f14] p-8 text-center text-[#666]">
               Chargement du panel admin...
             </div>
           ) : (
             <>
-          <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
+          <section className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {Object.entries(statLabels).map(([key, label]) => (
-              <div key={key} className="rounded-3xl bg-white p-5 shadow-soft">
-                <p className="text-sm text-slate-500">{label}</p>
-                <p className="mt-2 text-3xl font-black text-slate-900">
+              <div key={key} className="rounded-xl border border-[#1a1a20] bg-[#0f0f14] p-4">
+                <p className="flex items-center justify-between text-xs text-[#555]">{label}<span className="text-[#444]">●</span></p>
+                <p className="mt-2 font-['Space_Grotesk'] text-3xl font-semibold text-[#e8e8f0]">
                   {data.stats[key as keyof typeof statLabels]}
                 </p>
+                <p className="mt-1 text-xs text-[#2dd4a0]">+ actif</p>
               </div>
             ))}
           </section>
 
-          <section className="mt-8 rounded-3xl bg-white p-6 shadow-soft">
-            <h2 className="text-2xl font-bold text-slate-900">Utilisateurs</h2>
+          <section id="users" className="mt-6 rounded-xl border border-[#1a1a20] bg-[#0f0f14] p-5">
+            <h2 className="text-sm font-semibold text-[#d0d0dc]">Gestion des utilisateurs</h2>
             <div className="mt-5 overflow-x-auto">
               <table className="w-full min-w-[820px] text-left text-sm">
-                <thead className="text-slate-500">
+                <thead className="text-[#444]">
                   <tr>
                     <th className="py-3">Utilisateur</th>
                     <th>Rôle</th>
@@ -236,34 +276,34 @@ export default function AdminPage() {
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {data.users.map((item) => (
-                    <tr key={item.id}>
+                    <tr key={item.id} className="border-t border-[#111115]">
                       <td className="py-4">
-                        <Link href={`/profile/${item.username}`} className="font-semibold text-slate-900 hover:text-blue-700">
+                        <Link href={`/profile/${item.username}`} className="font-semibold text-[#d0d0dc] hover:text-[#4f8ef7]">
                           {item.firstName} {item.lastName}
                         </Link>
-                        <p className="text-xs text-slate-500">{item.email}</p>
+                        <p className="text-xs text-[#444]">{item.email}</p>
                       </td>
                       <td>
                         <select
                           value={item.role || 'USER'}
                           onChange={(event) => void updateRole(item.id, event.target.value)}
-                          className="rounded-full border border-slate-200 px-3 py-2"
+                          className="rounded-full border border-[#1e1e24] bg-[#131318] px-3 py-2 text-[#888]"
                         >
                           <option value="USER">USER</option>
                           <option value="ADMIN">ADMIN</option>
                         </select>
                       </td>
-                      <td className="text-slate-500">
+                      <td className="text-[#888]">
                         {item._count.posts} posts · {item._count.followers} abonnés
                       </td>
-                      <td className="text-slate-500">
+                      <td className="text-[#888]">
                         {item.createdAt ? formatDate(item.createdAt) : '-'}
                       </td>
                       <td>
                         <button
                           type="button"
                           onClick={() => void deleteUser(item.id)}
-                          className="rounded-full border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50"
+                          className="rounded-full border border-red-900/40 px-3 py-1.5 text-xs font-semibold text-red-400 hover:bg-red-950/40"
                         >
                           Supprimer
                         </button>
@@ -275,7 +315,7 @@ export default function AdminPage() {
             </div>
           </section>
 
-          <section className="mt-8 grid gap-6 lg:grid-cols-3">
+          <section id="content" className="mt-6 grid gap-4 lg:grid-cols-4">
             <AdminContentPanel title="Posts">
               {data.posts.map((post) => (
                 <ModerationItem
@@ -324,7 +364,7 @@ export default function AdminPage() {
             </AdminContentPanel>
           </section>
 
-          <section className="mt-8 grid gap-6 lg:grid-cols-3">
+          <section id="moderation" className="mt-6 grid gap-4 lg:grid-cols-3">
             <AdminContentPanel title="Conversations">
               {data.conversations.map((conversation) => (
                 <ModerationItem
@@ -360,6 +400,7 @@ export default function AdminPage() {
           </section>
             </>
           )}
+          </div>
         </section>
       </div>
     </main>
@@ -368,8 +409,8 @@ export default function AdminPage() {
 
 function AdminContentPanel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-3xl bg-white p-6 shadow-soft">
-      <h2 className="text-xl font-bold text-slate-900">{title}</h2>
+    <section className="rounded-xl border border-[#1a1a20] bg-[#0f0f14] p-5">
+      <h2 className="text-sm font-semibold text-[#d0d0dc]">{title}</h2>
       <div className="mt-4 space-y-3">{children}</div>
     </section>
   );
@@ -388,15 +429,15 @@ function ModerationItem({
 }) {
   const content = (
     <>
-      <p className="font-semibold text-slate-900">{title}</p>
-      <p className="mt-1 text-xs text-slate-500">{meta}</p>
+      <p className="font-semibold text-[#d0d0dc]">{title}</p>
+      <p className="mt-1 text-xs text-[#555]">{meta}</p>
     </>
   );
 
   return (
-    <article className="rounded-2xl bg-slate-50 p-4">
+    <article className="rounded-lg border border-[#1e1e24] bg-[#131318] p-4">
       {href ? (
-        <Link href={href} className="block hover:text-blue-700">
+        <Link href={href} className="block hover:text-[#4f8ef7]">
           {content}
         </Link>
       ) : (
@@ -405,7 +446,7 @@ function ModerationItem({
       <button
         type="button"
         onClick={onDelete}
-        className="mt-3 rounded-full border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50"
+        className="mt-3 rounded-full border border-red-900/40 px-3 py-1.5 text-xs font-semibold text-red-400 hover:bg-red-950/40"
       >
         Supprimer
       </button>
