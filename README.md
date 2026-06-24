@@ -12,6 +12,7 @@ A modern social network platform designed specifically for IT professionals. Con
 - **Events** - Discover, create, inspect and join IT events and meetups.
 - **Notifications** - Track follows, comments, applications and event participation.
 - **Private messaging** - Start direct conversations and exchange messages with network members.
+- **Admin panel** - Moderate users, posts, missions and events from a protected admin area.
 - **Authentication** - Register, login, logout and maintain sessions with JWT cookies.
 
 ## Tech Stack
@@ -68,6 +69,10 @@ Demo login after seeding:
 - Email: `demo@example.com`
 - Password: `password123`
 
+Admin login after seeding:
+- Email: `admin@example.com`
+- Password: `admin123`
+
 6. Run the development server:
 ```bash
 npm run dev
@@ -117,6 +122,10 @@ npm run prisma:studio    # Open Prisma Studio
 npm run db:seed          # Seed demo users, posts, missions and events
 ```
 
+Seeded admin account:
+- Email: `admin@example.com`
+- Password: `admin123`
+
 ## Project Structure
 
 ```
@@ -160,6 +169,9 @@ IT-Social-Network/
 - `POST /api/conversations/[conversationId]/messages`
 - `GET /api/search`
 - `GET /api/dashboard`
+- `GET /api/admin`
+- `PATCH|DELETE /api/admin/users/[userId]`
+- `DELETE /api/admin/content/[contentType]/[contentId]`
 
 ## Main Pages
 
@@ -175,6 +187,7 @@ IT-Social-Network/
 - `/events/[eventId]` - Event details and attendee list
 - `/notifications` - Activity notifications and unread state
 - `/messages` - Private conversations and direct messages
+- `/admin` - Admin panel for moderation and platform stats
 - `/login` and `/register` - Authentication
 
 ## Contributing

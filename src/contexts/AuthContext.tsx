@@ -14,6 +14,7 @@ export type AuthUser = {
   id: string;
   email: string;
   username: string;
+  role?: string;
   firstName: string;
   lastName: string;
   title?: string | null;
@@ -26,6 +27,8 @@ export type AuthUser = {
   experience?: unknown;
   education?: unknown;
   portfolio?: unknown;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 type RegisterPayload = {

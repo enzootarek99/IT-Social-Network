@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export function proxy(request: NextRequest) {
-  if (request.nextUrl.pathname !== '/profile') {
+  if (!['/profile', '/admin'].includes(request.nextUrl.pathname)) {
     return NextResponse.next();
   }
 
@@ -17,5 +17,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/profile'],
+  matcher: ['/profile', '/admin'],
 };

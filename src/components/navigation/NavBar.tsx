@@ -15,6 +15,8 @@ const links = [
   { href: '/events', label: 'Événements' },
 ];
 
+const adminLink = { href: '/admin', label: 'Admin' };
+
 export function NavBar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -60,7 +62,7 @@ export function NavBar() {
         </Link>
 
         <div className="hidden items-center gap-2 md:flex">
-          {links.map((link) => (
+          {[...links, ...(user?.role === 'ADMIN' ? [adminLink] : [])].map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -146,7 +148,7 @@ export function NavBar() {
       {isMobileMenuOpen && (
         <div className="border-t border-slate-100 bg-white px-4 py-4 shadow-soft md:hidden">
           <div className="space-y-2">
-            {links.map((link) => (
+            {[...links, ...(user?.role === 'ADMIN' ? [adminLink] : [])].map((link) => (
               <Link
                 key={link.href}
                 href={link.href}

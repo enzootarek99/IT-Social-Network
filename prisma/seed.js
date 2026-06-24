@@ -44,6 +44,7 @@ async function upsertUser(user) {
     where: { email: user.email },
     update: {
       username: user.username,
+      role: user.role || 'USER',
       firstName: user.firstName,
       lastName: user.lastName,
       title: user.title,
@@ -163,6 +164,7 @@ async function main() {
   const demo = await upsertUser({
     email: 'demo@example.com',
     username: 'demo',
+    role: 'USER',
     password: 'password123',
     firstName: 'Demo',
     lastName: 'User',
@@ -196,6 +198,31 @@ async function main() {
         description: 'Starter kit auth, dashboard, Prisma et Tailwind pour MVP B2B.',
       },
     ],
+  });
+
+  await upsertUser({
+    email: 'admin@example.com',
+    username: 'admin',
+    role: 'ADMIN',
+    password: 'admin123',
+    firstName: 'Admin',
+    lastName: 'IT',
+    title: 'Platform Administrator',
+    bio: 'Compte administrateur pour superviser la plateforme IT Social Network.',
+    company: 'IT Social Network',
+    location: 'Remote',
+    website: 'https://example.com/admin',
+    skills: ['Moderation', 'Security', 'Community'],
+    experience: [
+      {
+        role: 'Platform Administrator',
+        company: 'IT Social Network',
+        period: '2026 - Aujourd’hui',
+        description: 'Gestion des utilisateurs, contenus, missions et événements.',
+      },
+    ],
+    education: [],
+    portfolio: [],
   });
 
   const sarah = await upsertUser({
@@ -447,6 +474,7 @@ async function main() {
 
   console.log('Seed data ready.');
   console.log('Demo login: demo@example.com / password123');
+  console.log('Admin login: admin@example.com / admin123');
 }
 
 main()

@@ -9,6 +9,7 @@ export const publicUserSelect = {
   id: true,
   email: true,
   username: true,
+  role: true,
   firstName: true,
   lastName: true,
   title: true,
