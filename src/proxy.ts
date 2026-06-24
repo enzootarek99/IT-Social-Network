@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const protectedRoutes = ['/profile'];
-
 export function proxy(request: NextRequest) {
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    request.nextUrl.pathname.startsWith(route),
-  );
-
-  if (!isProtectedRoute) {
+  if (request.nextUrl.pathname !== '/profile') {
     return NextResponse.next();
   }
 
@@ -23,5 +17,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/profile/:path*'],
+  matcher: ['/profile'],
 };

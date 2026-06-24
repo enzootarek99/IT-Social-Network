@@ -16,7 +16,8 @@ export default function LoginPage() {
       setIsLoading(true);
       setError(undefined);
       await login(email, password);
-      router.push('/');
+      const redirect = new URLSearchParams(window.location.search).get('redirect');
+      router.push(redirect?.startsWith('/') ? redirect : '/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Connexion impossible');
     } finally {

@@ -75,6 +75,23 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+## Troubleshooting Auth Locally
+
+If registration or the demo login fails on a local machine, check the database setup first:
+
+```bash
+cp .env.example .env.local
+cp .env.example .env
+# Make sure DATABASE_URL points to your running PostgreSQL database
+npm run prisma:migrate
+npm run db:seed
+npm run dev
+```
+
+The demo account exists only after `npm run db:seed`:
+- Email: `demo@example.com`
+- Password: `password123`
+
 ## Useful Scripts
 
 ```bash
