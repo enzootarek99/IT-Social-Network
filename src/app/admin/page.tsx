@@ -17,6 +17,7 @@ type AdminData = {
     messageCount: number;
     notificationCount: number;
     reportCount: number;
+    reviewCount: number;
   };
   users: Array<AuthUser & { _count: { posts: number; followers: number; opportunities: number; organizedEvents: number } }>;
   posts: Array<{ id: string; content: string; createdAt: string; author: AuthUser; _count: { comments: number; likes: number } }>;
@@ -27,6 +28,7 @@ type AdminData = {
   messages: Array<{ id: string; content: string; createdAt: string; sender: AuthUser; conversation: { participantA: AuthUser; participantB: AuthUser } }>;
   notifications: Array<{ id: string; type: string; message: string; createdAt: string; recipient: AuthUser; actor?: AuthUser | null }>;
   reports: Array<{ id: string; targetType: string; targetId: string; reason: string; status: string; createdAt: string; reporter: AuthUser }>;
+  reviews: Array<{ id: string; rating: number; comment: string; createdAt: string; reviewer: AuthUser; opportunity: { id: string; title: string } }>;
 };
 
 const statLabels = {
@@ -39,6 +41,7 @@ const statLabels = {
   messageCount: 'Messages',
   notificationCount: 'Notifications',
   reportCount: 'Signalements',
+  reviewCount: 'Reviews',
 } as const;
 
 export default function AdminPage() {
@@ -408,6 +411,18 @@ export default function AdminPage() {
                   title={`${report.targetType} · ${truncateText(report.reason, 70)}`}
                   meta={`${report.status} · par ${report.reporter.firstName} ${report.reporter.lastName} · ${formatDate(report.createdAt)}`}
                   onDelete={() => void deleteContent('reports', report.id)}
+                />
+              ))}
+            </AdminContentPanel>
+
+            <AdminContentPanel title="Reviews">
+              {data.reviews.map((review) => (
+                <ModerationItem
+                  key={review.id}
+                  title={`★ ${review.rating} · ${truncateText(review.comment, 70)}`}
+                  meta={`${review.opportunity.title} · par ${review.reviewer.firstName} ${review.reviewer.lastName}`}
+                  href={`/marketplace/${review.opportunity.id}`}
+                  onDelete={() => void deleteContent('reviews', review.id)}
                 />
               ))}
             </AdminContentPanel>

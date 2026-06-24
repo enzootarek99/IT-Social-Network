@@ -18,9 +18,14 @@ export async function GET(request: NextRequest, context: RouteContext) {
       where: { id: opportunityId },
       include: {
         author: { select: publicUserSelect },
+        reviews: {
+          orderBy: { createdAt: 'desc' },
+          include: { reviewer: { select: publicUserSelect } },
+        },
         _count: {
           select: {
             applications: true,
+            reviews: true,
           },
         },
       },
@@ -57,6 +62,10 @@ export async function GET(request: NextRequest, context: RouteContext) {
     return NextResponse.json({
       opportunity: {
         ...opportunity,
+        averageRating: opportunity.reviews.length
+          ? opportunity.reviews.reduce((sum, review) => sum + review.rating, 0) /
+            opportunity.reviews.length
+          : null,
         applications,
         appliedByMe,
         isAuthor,

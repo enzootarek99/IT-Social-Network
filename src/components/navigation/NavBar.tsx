@@ -11,6 +11,7 @@ const links = [
   { href: '/search', label: 'Recherche' },
   { href: '/name-proposals', label: 'Naming' },
   { href: '/network', label: 'Réseau' },
+  { href: '/saved', label: 'Sauvegardés' },
   { href: '/profile', label: 'Profil & CV' },
   { href: '/marketplace', label: 'Freelance' },
   { href: '/events', label: 'Événements' },

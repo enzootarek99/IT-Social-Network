@@ -26,6 +26,14 @@ type OpportunityDetail = {
   createdAt: string;
   author: AuthUser;
   applications: OpportunityApplication[];
+  reviews: Array<{
+    id: string;
+    rating: number;
+    comment: string;
+    createdAt: string;
+    reviewer: AuthUser;
+  }>;
+  averageRating?: number | null;
   appliedByMe: boolean;
   isAuthor: boolean;
   _count: {
@@ -49,6 +57,8 @@ export default function OpportunityDetailPage() {
     remote: true,
   });
   const [message, setMessage] = useState('');
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState('');
   const [status, setStatus] = useState<string>();
   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState(true);
@@ -166,6 +176,31 @@ export default function OpportunityDetailPage() {
     }
   };
 
+  const handleReview = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    try {
+      setStatus(undefined);
+      setError(undefined);
+      const response = await fetch(`/api/opportunities/${params.opportunityId}/reviews`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rating: reviewRating, comment: reviewComment }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Review impossible');
+      }
+
+      setReviewComment('');
+      setStatus('Review enregistrée.');
+      await loadOpportunity();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Review impossible');
+    }
+  };
+
   if (isLoading) {
     return (
       <main className="mx-auto max-w-5xl px-4 py-16 text-center text-slate-500">
@@ -240,6 +275,7 @@ export default function OpportunityDetailPage() {
               {opportunity.author.firstName} {opportunity.author.lastName}
             </Link>{' '}
             · {formatDate(opportunity.createdAt)} · {opportunity._count.applications} candidature(s)
+            {opportunity.averageRating ? ` · ★ ${opportunity.averageRating.toFixed(1)}` : ''}
           </p>
         </section>
 
@@ -397,6 +433,55 @@ export default function OpportunityDetailPage() {
               </div>
             </section>
           )}
+
+          <section className="rounded-3xl bg-white p-6 shadow-soft">
+            <h2 className="text-xl font-bold text-slate-900">Reviews</h2>
+            {isAuthenticated && !opportunity.isAuthor && (
+              <form onSubmit={handleReview} className="mt-4 rounded-2xl bg-slate-50 p-4">
+                <label className="text-sm font-semibold text-slate-700">
+                  Note
+                  <select
+                    value={reviewRating}
+                    onChange={(event) => setReviewRating(Number(event.target.value))}
+                    className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3"
+                  >
+                    {[5, 4, 3, 2, 1].map((rating) => (
+                      <option key={rating} value={rating}>
+                        {rating} étoile(s)
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <textarea
+                  value={reviewComment}
+                  onChange={(event) => setReviewComment(event.target.value)}
+                  className="mt-3 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm"
+                  rows={3}
+                  placeholder="Votre retour sur cette mission/client..."
+                />
+                <button
+                  disabled={!reviewComment.trim()}
+                  className="mt-3 rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white disabled:bg-blue-300"
+                >
+                  Publier la review
+                </button>
+              </form>
+            )}
+            <div className="mt-4 space-y-3">
+              {opportunity.reviews.length ? (
+                opportunity.reviews.map((review) => (
+                  <article key={review.id} className="rounded-2xl bg-slate-50 p-4">
+                    <p className="font-semibold text-slate-900">
+                      ★ {review.rating} · {review.reviewer.firstName} {review.reviewer.lastName}
+                    </p>
+                    <p className="mt-2 text-sm text-slate-700">{review.comment}</p>
+                  </article>
+                ))
+              ) : (
+                <p className="text-sm text-slate-500">Aucune review pour le moment.</p>
+              )}
+            </div>
+          </section>
         </aside>
       </div>
     </main>

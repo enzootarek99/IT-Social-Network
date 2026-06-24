@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
       messageCount,
       notificationCount,
       reportCount,
+      reviewCount,
       users,
       posts,
       comments,
@@ -30,6 +31,7 @@ export async function GET(request: NextRequest) {
       messages,
       notifications,
       reports,
+      reviews,
     ] = await Promise.all([
       prisma.user.count(),
       prisma.post.count(),
@@ -40,6 +42,7 @@ export async function GET(request: NextRequest) {
       prisma.message.count(),
       prisma.notification.count(),
       prisma.report.count({ where: { status: 'OPEN' } }),
+      prisma.opportunityReview.count(),
       prisma.user.findMany({
         orderBy: { createdAt: 'desc' },
         take: 20,
@@ -131,6 +134,14 @@ export async function GET(request: NextRequest) {
           resolver: { select: publicUserSelect },
         },
       }),
+      prisma.opportunityReview.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 20,
+        include: {
+          reviewer: { select: publicUserSelect },
+          opportunity: true,
+        },
+      }),
     ]);
 
     return NextResponse.json({
@@ -144,6 +155,7 @@ export async function GET(request: NextRequest) {
         messageCount,
         notificationCount,
         reportCount,
+        reviewCount,
       },
       users,
       posts,
@@ -154,6 +166,7 @@ export async function GET(request: NextRequest) {
       messages,
       notifications,
       reports,
+      reviews,
     });
   } catch (error) {
     console.error('Error fetching admin data:', error);

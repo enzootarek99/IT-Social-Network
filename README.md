@@ -6,6 +6,7 @@ A modern platform for IT professionals, students, freelancers and tech communiti
 
 - **Feed** - Share text/image updates, projects and insights, like/comment, and delete your own posts.
 - **Saved posts and reports** - Save useful posts and report content to moderation.
+- **Freelance reviews** - Rate and review missions/clients.
 - **Global search and dashboard** - Search across the platform and track personal activity.
 - **Profile & CV** - Showcase skills, bio, company, location, experiences, education, portfolio projects and public profile pages.
 - **Network discovery** - Search IT professionals and follow/unfollow profiles.
@@ -162,6 +163,7 @@ IT-Social-Network/
 - `GET /api/opportunities/[opportunityId]`
 - `PATCH|DELETE /api/opportunities/[opportunityId]`
 - `POST /api/opportunities/[opportunityId]/apply`
+- `POST /api/opportunities/[opportunityId]/reviews`
 - `GET|POST /api/events`
 - `GET /api/events/[eventId]`
 - `PATCH|DELETE /api/events/[eventId]`
@@ -175,6 +177,7 @@ IT-Social-Network/
 - `GET /api/dashboard`
 - `GET|POST /api/name-votes`
 - `POST /api/reports`
+- `GET /api/saved-posts`
 - `GET /api/admin`
 - `PATCH|DELETE /api/admin/users/[userId]`
 - `DELETE /api/admin/content/[contentType]/[contentId]`
@@ -185,6 +188,7 @@ IT-Social-Network/
 - `/dashboard` - Authenticated activity dashboard
 - `/search` - Global search
 - `/name-proposals` - Platform naming proposals and votes
+- `/saved` - Saved posts
 - `/network` - User discovery and follow/unfollow
 - `/profile` - Authenticated profile editor
 - `/profile/[username]` - Public profile page

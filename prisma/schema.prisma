@@ -28,24 +28,25 @@ model User {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  posts            Post[]
-  comments         Comment[]
-  likes            Like[]
-  savedPosts       SavedPost[]
-  reports          Report[]                 @relation("ReportReporter")
-  resolvedReports  Report[]                 @relation("ReportResolver")
-  nameVotes        NameVote[]
-  followers        Follow[]                 @relation("UserFollowers")
-  following        Follow[]                 @relation("UserFollowing")
-  opportunities    FreelanceOpportunity[]   @relation("OpportunityAuthor")
-  applications     OpportunityApplication[]
-  organizedEvents  Event[]                  @relation("EventOrganizer")
-  eventAttendances EventAttendee[]
-  notifications    Notification[]           @relation("NotificationRecipient")
-  notificationActs Notification[]           @relation("NotificationActor")
-  conversationsA   Conversation[]           @relation("ConversationParticipantA")
-  conversationsB   Conversation[]           @relation("ConversationParticipantB")
-  sentMessages     Message[]                @relation("MessageSender")
+  posts              Post[]
+  comments           Comment[]
+  likes              Like[]
+  savedPosts         SavedPost[]
+  reports            Report[]                 @relation("ReportReporter")
+  resolvedReports    Report[]                 @relation("ReportResolver")
+  nameVotes          NameVote[]
+  opportunityReviews OpportunityReview[]
+  followers          Follow[]                 @relation("UserFollowers")
+  following          Follow[]                 @relation("UserFollowing")
+  opportunities      FreelanceOpportunity[]   @relation("OpportunityAuthor")
+  applications       OpportunityApplication[]
+  organizedEvents    Event[]                  @relation("EventOrganizer")
+  eventAttendances   EventAttendee[]
+  notifications      Notification[]           @relation("NotificationRecipient")
+  notificationActs   Notification[]           @relation("NotificationActor")
+  conversationsA     Conversation[]           @relation("ConversationParticipantA")
+  conversationsB     Conversation[]           @relation("ConversationParticipantB")
+  sentMessages       Message[]                @relation("MessageSender")
 }
 
 model Post {
@@ -126,6 +127,7 @@ model FreelanceOpportunity {
 
   author       User                     @relation("OpportunityAuthor", fields: [authorId], references: [id], onDelete: Cascade)
   applications OpportunityApplication[]
+  reviews      OpportunityReview[]
 }
 
 model OpportunityApplication {
@@ -139,6 +141,20 @@ model OpportunityApplication {
   applicant   User                 @relation(fields: [applicantId], references: [id], onDelete: Cascade)
 
   @@unique([opportunityId, applicantId])
+}
+
+model OpportunityReview {
+  id            String   @id @default(cuid())
+  rating        Int
+  comment       String
+  opportunityId String
+  reviewerId    String
+  createdAt     DateTime @default(now())
+
+  opportunity FreelanceOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  reviewer    User                 @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  @@unique([opportunityId, reviewerId])
 }
 
 model Event {
