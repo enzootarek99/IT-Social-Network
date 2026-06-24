@@ -256,7 +256,12 @@ export default function MarketplacePage() {
                 <article key={opportunity.id} className="rounded-3xl bg-white p-6 shadow-soft">
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
-                      <h2 className="text-xl font-bold text-slate-900">{opportunity.title}</h2>
+                      <Link
+                        href={`/marketplace/${opportunity.id}`}
+                        className="text-xl font-bold text-slate-900 hover:text-blue-700"
+                      >
+                        {opportunity.title}
+                      </Link>
                       <p className="mt-1 text-sm text-slate-500">
                         {opportunity.company} · {opportunity.location} ·{' '}
                         {opportunity.remote ? 'Remote' : 'Sur site'}
@@ -278,6 +283,12 @@ export default function MarketplacePage() {
                     Publié par {opportunity.author.firstName} {opportunity.author.lastName} ·{' '}
                     {formatDate(opportunity.createdAt)} · {opportunity._count.applications} candidature(s)
                   </p>
+                  <Link
+                    href={`/marketplace/${opportunity.id}`}
+                    className="mt-4 inline-flex rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:text-blue-700"
+                  >
+                    Voir le détail
+                  </Link>
                   {isAuthenticated ? (
                     <form
                       onSubmit={(event) => void handleApply(event, opportunity.id)}

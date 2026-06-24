@@ -201,7 +201,12 @@ export default function EventsPage() {
               <article key={event.id} className="rounded-3xl bg-white p-6 shadow-soft">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-xl font-bold text-slate-900">{event.title}</h2>
+                    <Link
+                      href={`/events/${event.id}`}
+                      className="text-xl font-bold text-slate-900 hover:text-blue-700"
+                    >
+                      {event.title}
+                    </Link>
                     <p className="mt-1 text-sm text-slate-500">
                       {event.online ? 'En ligne' : event.location} · {formatDate(event.startsAt)}
                     </p>
@@ -223,6 +228,12 @@ export default function EventsPage() {
                     Organisé par {event.organizer.firstName} {event.organizer.lastName}
                   </span>
                   <span>{event._count.attendees} participant(s)</span>
+                  <Link
+                    href={`/events/${event.id}`}
+                    className="font-semibold text-slate-700 hover:text-blue-700"
+                  >
+                    Voir le détail
+                  </Link>
                   {isAuthenticated && (
                     <button
                       type="button"

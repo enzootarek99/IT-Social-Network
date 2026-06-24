@@ -7,8 +7,8 @@ A modern social network platform designed specifically for IT professionals. Con
 - **Feed** - Share updates, projects and insights, like posts, and comment with the community.
 - **Profile & CV** - Showcase skills, bio, company, location, portfolio links and public profile pages.
 - **Network discovery** - Search IT professionals and follow/unfollow profiles.
-- **Freelance Marketplace** - Find, publish and apply to freelance opportunities.
-- **Events** - Discover, create and join IT events and meetups.
+- **Freelance Marketplace** - Find, publish, inspect and apply to freelance opportunities.
+- **Events** - Discover, create, inspect and join IT events and meetups.
 - **Authentication** - Register, login, logout and maintain sessions with JWT cookies.
 
 ## Tech Stack
@@ -114,8 +114,10 @@ IT-Social-Network/
 - `POST /api/posts/[postId]/comments`
 - `GET|PUT /api/profile`
 - `GET|POST /api/opportunities`
+- `GET /api/opportunities/[opportunityId]`
 - `POST /api/opportunities/[opportunityId]/apply`
 - `GET|POST /api/events`
+- `GET /api/events/[eventId]`
 - `POST /api/events/[eventId]/attend`
 - `GET|POST /api/follow`
 
@@ -126,7 +128,9 @@ IT-Social-Network/
 - `/profile` - Authenticated profile editor
 - `/profile/[username]` - Public profile page
 - `/marketplace` - Freelance opportunities
+- `/marketplace/[opportunityId]` - Opportunity details and received applications
 - `/events` - Community events
+- `/events/[eventId]` - Event details and attendee list
 - `/login` and `/register` - Authentication
 
 ## Contributing
