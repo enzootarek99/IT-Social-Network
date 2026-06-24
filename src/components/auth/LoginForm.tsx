@@ -18,6 +18,11 @@ export function LoginForm({ onSubmit, isLoading = false, error }: LoginFormProps
     await onSubmit(email, password);
   };
 
+  const fillDemoAccount = () => {
+    setEmail('demo@example.com');
+    setPassword('password123');
+  };
+
   return (
     <form onSubmit={handleSubmit} className="mx-auto w-full max-w-md rounded-3xl bg-white p-8 shadow-soft">
       <h2 className="text-2xl font-bold text-slate-900">Connexion</h2>
@@ -57,6 +62,14 @@ export function LoginForm({ onSubmit, isLoading = false, error }: LoginFormProps
         className="mt-6 w-full rounded-2xl bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
       >
         {isLoading ? 'Connexion...' : 'Se connecter'}
+      </button>
+
+      <button
+        type="button"
+        onClick={fillDemoAccount}
+        className="mt-3 w-full rounded-2xl border border-blue-200 px-4 py-3 font-semibold text-blue-700 hover:bg-blue-50"
+      >
+        Utiliser le compte demo
       </button>
 
       <p className="mt-6 text-center text-sm text-slate-500">

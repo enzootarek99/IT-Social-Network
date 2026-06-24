@@ -92,6 +92,16 @@ The demo account exists only after `npm run db:seed`:
 - Email: `demo@example.com`
 - Password: `password123`
 
+If the login page shows a generic connection error, restart the dev server after migrations so
+Next.js reloads the generated Prisma Client:
+
+```bash
+npm run prisma:generate
+npm run prisma:migrate
+npm run db:seed
+npm run dev
+```
+
 ## Useful Scripts
 
 ```bash

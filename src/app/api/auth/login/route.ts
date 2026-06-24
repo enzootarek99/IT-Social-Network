@@ -1,18 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { attachAuthCookie, publicUserSelect, signAuthToken, verifyPassword } from '@/lib/auth';
+import { getDatabaseSetupErrorMessage } from '@/lib/api-errors';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { email, password } = body;
+    const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
 
-    if (!email || !password) {
+    if (!normalizedEmail || !password) {
       return NextResponse.json({ error: 'email and password are required' }, { status: 400 });
     }
 
     const userWithPassword = await prisma.user.findUnique({
-      where: { email },
+      where: { email: normalizedEmail },
     });
 
     if (!userWithPassword) {
@@ -35,6 +37,9 @@ export async function POST(request: NextRequest) {
     return attachAuthCookie(response, token);
   } catch (error) {
     console.error('Error logging in:', error);
-    return NextResponse.json({ error: 'Failed to login' }, { status: 500 });
+    return NextResponse.json(
+      { error: getDatabaseSetupErrorMessage(error, 'Connexion impossible.') },
+      { status: 500 },
+    );
   }
 }
