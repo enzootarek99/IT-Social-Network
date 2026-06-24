@@ -14,6 +14,10 @@ const featureCards = [
     text: 'Centralisez vos compétences, votre expérience et votre portfolio dans un profil professionnel.',
   },
   {
+    title: 'Réseau',
+    text: 'Découvrez des professionnels IT, suivez leurs profils et enrichissez votre feed.',
+  },
+  {
     title: 'Missions freelance',
     text: 'Publiez ou trouvez des opportunités adaptées aux compétences tech recherchées.',
   },
@@ -87,7 +91,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-6 px-4 py-12 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:px-8">
+      <section className="mx-auto grid max-w-7xl gap-6 px-4 py-12 sm:px-6 md:grid-cols-2 lg:grid-cols-5 lg:px-8">
         {featureCards.map((feature) => (
           <div key={feature.title} className="rounded-3xl bg-white p-6 shadow-soft">
             <h2 className="text-lg font-bold text-slate-900">{feature.title}</h2>

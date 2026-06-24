@@ -27,6 +27,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const targetUser = await prisma.user.findUnique({
+      where: { id: followingId },
+      select: { id: true },
+    });
+
+    if (!targetUser) {
+      return NextResponse.json(
+        { error: 'User to follow was not found' },
+        { status: 404 }
+      );
+    }
+
     // Check if already following
     const existingFollow = await prisma.follow.findUnique({
       where: {

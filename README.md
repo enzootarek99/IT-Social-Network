@@ -6,6 +6,7 @@ A modern social network platform designed specifically for IT professionals. Con
 
 - **Feed** - Share updates, projects and insights, like posts, and comment with the community.
 - **Profile & CV** - Showcase skills, bio, company, location and portfolio links.
+- **Network discovery** - Search IT professionals and follow/unfollow profiles.
 - **Freelance Marketplace** - Find, publish and apply to freelance opportunities.
 - **Events** - Discover, create and join IT events and meetups.
 - **Authentication** - Register, login, logout and maintain sessions with JWT cookies.
@@ -107,6 +108,7 @@ IT-Social-Network/
 - `POST /api/auth/login`
 - `POST /api/auth/logout`
 - `GET /api/auth/me`
+- `GET /api/users`
 - `GET|POST /api/posts`
 - `POST /api/posts/[postId]/like`
 - `POST /api/posts/[postId]/comments`
