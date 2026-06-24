@@ -16,17 +16,25 @@ export async function GET(request: NextRequest) {
       postCount,
       opportunityCount,
       eventCount,
+      commentCount,
+      conversationCount,
       messageCount,
       notificationCount,
       users,
       posts,
+      comments,
       opportunities,
       events,
+      conversations,
+      messages,
+      notifications,
     ] = await Promise.all([
       prisma.user.count(),
       prisma.post.count(),
       prisma.freelanceOpportunity.count(),
       prisma.event.count(),
+      prisma.comment.count(),
+      prisma.conversation.count(),
       prisma.message.count(),
       prisma.notification.count(),
       prisma.user.findMany({
@@ -52,6 +60,20 @@ export async function GET(request: NextRequest) {
           _count: { select: { comments: true, likes: true } },
         },
       }),
+      prisma.comment.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 20,
+        include: {
+          author: { select: publicUserSelect },
+          post: {
+            select: {
+              id: true,
+              content: true,
+              author: { select: publicUserSelect },
+            },
+          },
+        },
+      }),
       prisma.freelanceOpportunity.findMany({
         orderBy: { createdAt: 'desc' },
         take: 20,
@@ -68,6 +90,36 @@ export async function GET(request: NextRequest) {
           _count: { select: { attendees: true } },
         },
       }),
+      prisma.conversation.findMany({
+        orderBy: { updatedAt: 'desc' },
+        take: 20,
+        include: {
+          participantA: { select: publicUserSelect },
+          participantB: { select: publicUserSelect },
+          _count: { select: { messages: true } },
+        },
+      }),
+      prisma.message.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 20,
+        include: {
+          sender: { select: publicUserSelect },
+          conversation: {
+            include: {
+              participantA: { select: publicUserSelect },
+              participantB: { select: publicUserSelect },
+            },
+          },
+        },
+      }),
+      prisma.notification.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 20,
+        include: {
+          recipient: { select: publicUserSelect },
+          actor: { select: publicUserSelect },
+        },
+      }),
     ]);
 
     return NextResponse.json({
@@ -76,13 +128,19 @@ export async function GET(request: NextRequest) {
         postCount,
         opportunityCount,
         eventCount,
+        commentCount,
+        conversationCount,
         messageCount,
         notificationCount,
       },
       users,
       posts,
+      comments,
       opportunities,
       events,
+      conversations,
+      messages,
+      notifications,
     });
   } catch (error) {
     console.error('Error fetching admin data:', error);

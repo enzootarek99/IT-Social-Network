@@ -10,22 +10,30 @@ type AdminData = {
   stats: {
     userCount: number;
     postCount: number;
+    commentCount: number;
     opportunityCount: number;
     eventCount: number;
+    conversationCount: number;
     messageCount: number;
     notificationCount: number;
   };
   users: Array<AuthUser & { _count: { posts: number; followers: number; opportunities: number; organizedEvents: number } }>;
   posts: Array<{ id: string; content: string; createdAt: string; author: AuthUser; _count: { comments: number; likes: number } }>;
+  comments: Array<{ id: string; content: string; createdAt: string; author: AuthUser; post: { id: string; content: string; author: AuthUser } }>;
   opportunities: Array<{ id: string; title: string; company: string; createdAt: string; author: AuthUser; _count: { applications: number } }>;
   events: Array<{ id: string; title: string; startsAt: string; organizer: AuthUser; _count: { attendees: number } }>;
+  conversations: Array<{ id: string; updatedAt: string; participantA: AuthUser; participantB: AuthUser; _count: { messages: number } }>;
+  messages: Array<{ id: string; content: string; createdAt: string; sender: AuthUser; conversation: { participantA: AuthUser; participantB: AuthUser } }>;
+  notifications: Array<{ id: string; type: string; message: string; createdAt: string; recipient: AuthUser; actor?: AuthUser | null }>;
 };
 
 const statLabels = {
   userCount: 'Utilisateurs',
   postCount: 'Posts',
+  commentCount: 'Commentaires',
   opportunityCount: 'Missions',
   eventCount: 'Événements',
+  conversationCount: 'Conversations',
   messageCount: 'Messages',
   notificationCount: 'Notifications',
 } as const;
@@ -202,7 +210,7 @@ export default function AdminPage() {
             </div>
           ) : (
             <>
-          <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
+          <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
             {Object.entries(statLabels).map(([key, label]) => (
               <div key={key} className="rounded-3xl bg-white p-5 shadow-soft">
                 <p className="text-sm text-slate-500">{label}</p>
@@ -279,6 +287,18 @@ export default function AdminPage() {
               ))}
             </AdminContentPanel>
 
+            <AdminContentPanel title="Commentaires">
+              {data.comments.map((comment) => (
+                <ModerationItem
+                  key={comment.id}
+                  title={truncateText(comment.content, 80)}
+                  meta={`${comment.author.firstName} ${comment.author.lastName} · sur "${truncateText(comment.post.content, 40)}"`}
+                  href={`/profile/${comment.post.author.username}`}
+                  onDelete={() => void deleteContent('comments', comment.id)}
+                />
+              ))}
+            </AdminContentPanel>
+
             <AdminContentPanel title="Missions">
               {data.opportunities.map((opportunity) => (
                 <ModerationItem
@@ -299,6 +319,41 @@ export default function AdminPage() {
                   meta={`${formatDate(event.startsAt)} · ${event._count.attendees} participant(s)`}
                   href={`/events/${event.id}`}
                   onDelete={() => void deleteContent('events', event.id)}
+                />
+              ))}
+            </AdminContentPanel>
+          </section>
+
+          <section className="mt-8 grid gap-6 lg:grid-cols-3">
+            <AdminContentPanel title="Conversations">
+              {data.conversations.map((conversation) => (
+                <ModerationItem
+                  key={conversation.id}
+                  title={`${conversation.participantA.firstName} ${conversation.participantA.lastName} ↔ ${conversation.participantB.firstName} ${conversation.participantB.lastName}`}
+                  meta={`${conversation._count.messages} message(s) · ${formatDate(conversation.updatedAt)}`}
+                  onDelete={() => void deleteContent('conversations', conversation.id)}
+                />
+              ))}
+            </AdminContentPanel>
+
+            <AdminContentPanel title="Messages">
+              {data.messages.map((message) => (
+                <ModerationItem
+                  key={message.id}
+                  title={truncateText(message.content, 80)}
+                  meta={`${message.sender.firstName} ${message.sender.lastName} · ${formatDate(message.createdAt)}`}
+                  onDelete={() => void deleteContent('messages', message.id)}
+                />
+              ))}
+            </AdminContentPanel>
+
+            <AdminContentPanel title="Notifications">
+              {data.notifications.map((notification) => (
+                <ModerationItem
+                  key={notification.id}
+                  title={truncateText(notification.message, 80)}
+                  meta={`${notification.type} · pour ${notification.recipient.firstName} ${notification.recipient.lastName}`}
+                  onDelete={() => void deleteContent('notifications', notification.id)}
                 />
               ))}
             </AdminContentPanel>

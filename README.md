@@ -12,7 +12,7 @@ A modern social network platform designed specifically for IT professionals. Con
 - **Events** - Discover, create, inspect and join IT events and meetups.
 - **Notifications** - Track follows, comments, applications and event participation.
 - **Private messaging** - Start direct conversations and exchange messages with network members.
-- **Admin panel** - Moderate users, posts, missions and events from a protected admin area.
+- **Admin panel** - WordPress-style back-office with access to users, posts, comments, missions, events, conversations, messages and notifications.
 - **Authentication** - Register, login, logout and maintain sessions with JWT cookies.
 
 ## Tech Stack

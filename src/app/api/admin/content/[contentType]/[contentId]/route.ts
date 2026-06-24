@@ -20,10 +20,18 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
 
     if (contentType === 'posts') {
       await prisma.post.delete({ where: { id: contentId } });
+    } else if (contentType === 'comments') {
+      await prisma.comment.delete({ where: { id: contentId } });
     } else if (contentType === 'opportunities') {
       await prisma.freelanceOpportunity.delete({ where: { id: contentId } });
     } else if (contentType === 'events') {
       await prisma.event.delete({ where: { id: contentId } });
+    } else if (contentType === 'conversations') {
+      await prisma.conversation.delete({ where: { id: contentId } });
+    } else if (contentType === 'messages') {
+      await prisma.message.delete({ where: { id: contentId } });
+    } else if (contentType === 'notifications') {
+      await prisma.notification.delete({ where: { id: contentId } });
     } else {
       return NextResponse.json({ error: 'Unsupported content type' }, { status: 400 });
     }
