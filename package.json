@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "db:seed": "prisma db seed",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio"
@@ -41,5 +42,8 @@
   },
   "overrides": {
     "postcss": "^8.5.15"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   }
 }

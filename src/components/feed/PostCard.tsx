@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
+import { useAuth } from '@/contexts';
 import { formatDate } from '@/lib/utils';
-import type { FeedPost } from './types';
+import type { FeedComment, FeedPost } from './types';
 
 type PostCardProps = {
   post: FeedPost;
@@ -13,9 +14,15 @@ function initials(firstName: string, lastName: string) {
 }
 
 export function PostCard({ post }: PostCardProps) {
+  const { isAuthenticated } = useAuth();
   const [likeCount, setLikeCount] = useState(post._count.likes);
+  const [commentCount, setCommentCount] = useState(post._count.comments);
+  const [comments, setComments] = useState<FeedComment[]>(post.comments);
+  const [commentContent, setCommentContent] = useState('');
+  const [commentError, setCommentError] = useState<string>();
   const [liked, setLiked] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isCommenting, setIsCommenting] = useState(false);
 
   const toggleLike = async () => {
     try {
@@ -31,6 +38,37 @@ export function PostCard({ post }: PostCardProps) {
       setLikeCount((current) => current + (data.liked ? 1 : -1));
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const handleCommentSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!commentContent.trim()) {
+      return;
+    }
+
+    try {
+      setIsCommenting(true);
+      setCommentError(undefined);
+      const response = await fetch(`/api/posts/${post.id}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: commentContent }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Commentaire impossible');
+      }
+
+      setComments((current) => [...current, data.comment]);
+      setCommentCount((current) => current + 1);
+      setCommentContent('');
+    } catch (err) {
+      setCommentError(err instanceof Error ? err.message : 'Commentaire impossible');
+    } finally {
+      setIsCommenting(false);
     }
   };
 
@@ -75,8 +113,41 @@ export function PostCard({ post }: PostCardProps) {
         >
           {liked ? 'Aimé' : 'J’aime'} ({likeCount})
         </button>
-        <span>{post._count.comments} commentaires</span>
+        <span>{commentCount} commentaires</span>
       </div>
+
+      {(comments.length > 0 || isAuthenticated) && (
+        <div className="mt-5 space-y-4 border-t border-slate-100 pt-5">
+          {comments.map((comment) => (
+            <div key={comment.id} className="rounded-2xl bg-slate-50 px-4 py-3">
+              <p className="text-sm font-semibold text-slate-900">
+                {comment.author.firstName} {comment.author.lastName}
+              </p>
+              <p className="mt-1 text-sm text-slate-700">{comment.content}</p>
+            </div>
+          ))}
+
+          {isAuthenticated && (
+            <form onSubmit={handleCommentSubmit} className="flex gap-3">
+              <input
+                value={commentContent}
+                onChange={(event) => setCommentContent(event.target.value)}
+                className="flex-1 rounded-full border border-slate-200 px-4 py-2 text-sm focus:border-blue-500"
+                placeholder="Ajouter un commentaire"
+              />
+              <button
+                type="submit"
+                disabled={isCommenting || !commentContent.trim()}
+                className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+              >
+                Envoyer
+              </button>
+            </form>
+          )}
+
+          {commentError && <p className="text-sm text-red-700">{commentError}</p>}
+        </div>
+      )}
     </article>
   );
 }

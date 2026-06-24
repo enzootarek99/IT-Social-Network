@@ -9,6 +9,13 @@ export async function GET() {
       orderBy: { createdAt: 'desc' },
       include: {
         author: { select: publicUserSelect },
+        comments: {
+          orderBy: { createdAt: 'asc' },
+          take: 5,
+          include: {
+            author: { select: publicUserSelect },
+          },
+        },
         _count: {
           select: {
             comments: true,
@@ -45,6 +52,13 @@ export async function POST(request: NextRequest) {
       },
       include: {
         author: { select: publicUserSelect },
+        comments: {
+          orderBy: { createdAt: 'asc' },
+          take: 5,
+          include: {
+            author: { select: publicUserSelect },
+          },
+        },
         _count: {
           select: {
             comments: true,

@@ -38,6 +38,8 @@ export default function MarketplacePage() {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [form, setForm] = useState(emptyForm);
   const [query, setQuery] = useState('');
+  const [applicationMessages, setApplicationMessages] = useState<Record<string, string>>({});
+  const [applicationStatus, setApplicationStatus] = useState<Record<string, string>>({});
   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -68,6 +70,10 @@ export default function MarketplacePage() {
     setForm((current) => ({ ...current, [field]: value }));
   };
 
+  const updateApplicationMessage = (opportunityId: string, value: string) => {
+    setApplicationMessages((current) => ({ ...current, [opportunityId]: value }));
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(undefined);
@@ -88,6 +94,52 @@ export default function MarketplacePage() {
       setForm(emptyForm);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Création impossible');
+    }
+  };
+
+  const handleApply = async (event: FormEvent<HTMLFormElement>, opportunityId: string) => {
+    event.preventDefault();
+    const message = applicationMessages[opportunityId]?.trim();
+
+    if (!message) {
+      return;
+    }
+
+    try {
+      setApplicationStatus((current) => ({ ...current, [opportunityId]: '' }));
+      const response = await fetch(`/api/opportunities/${opportunityId}/apply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Candidature impossible');
+      }
+
+      setApplicationMessages((current) => ({ ...current, [opportunityId]: '' }));
+      setApplicationStatus((current) => ({
+        ...current,
+        [opportunityId]: 'Candidature envoyée.',
+      }));
+      setOpportunities((current) =>
+        current.map((opportunity) =>
+          opportunity.id === opportunityId
+            ? {
+                ...opportunity,
+                _count: {
+                  applications: opportunity._count.applications + 1,
+                },
+              }
+            : opportunity,
+        ),
+      );
+    } catch (err) {
+      setApplicationStatus((current) => ({
+        ...current,
+        [opportunityId]: err instanceof Error ? err.message : 'Candidature impossible',
+      }));
     }
   };
 
@@ -226,6 +278,41 @@ export default function MarketplacePage() {
                     Publié par {opportunity.author.firstName} {opportunity.author.lastName} ·{' '}
                     {formatDate(opportunity.createdAt)} · {opportunity._count.applications} candidature(s)
                   </p>
+                  {isAuthenticated ? (
+                    <form
+                      onSubmit={(event) => void handleApply(event, opportunity.id)}
+                      className="mt-5 rounded-2xl bg-slate-50 p-4"
+                    >
+                      <label className="block text-sm font-semibold text-slate-700">
+                        Message de candidature
+                        <textarea
+                          value={applicationMessages[opportunity.id] || ''}
+                          onChange={(event) =>
+                            updateApplicationMessage(opportunity.id, event.target.value)
+                          }
+                          className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500"
+                          rows={3}
+                          placeholder="Présentez rapidement votre disponibilité et votre expérience."
+                        />
+                      </label>
+                      <button
+                        type="submit"
+                        disabled={!applicationMessages[opportunity.id]?.trim()}
+                        className="mt-3 rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+                      >
+                        Candidater
+                      </button>
+                      {applicationStatus[opportunity.id] && (
+                        <p className="mt-3 text-sm text-slate-600">
+                          {applicationStatus[opportunity.id]}
+                        </p>
+                      )}
+                    </form>
+                  ) : (
+                    <p className="mt-5 rounded-2xl bg-blue-50 px-4 py-3 text-sm text-blue-900">
+                      Connectez-vous pour candidater à cette mission.
+                    </p>
+                  )}
                 </article>
               ))
             ) : (

@@ -34,6 +34,7 @@ export default function EventsPage() {
   const { isAuthenticated } = useAuth();
   const [events, setEvents] = useState<CommunityEvent[]>([]);
   const [form, setForm] = useState(emptyEventForm);
+  const [attendingEvents, setAttendingEvents] = useState<Record<string, boolean>>({});
   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -90,13 +91,23 @@ export default function EventsPage() {
       return;
     }
 
-    await fetch(`/api/events/${eventId}/attend`, { method: 'POST' });
+    const response = await fetch(`/api/events/${eventId}/attend`, { method: 'POST' });
+    const data = await response.json();
+
+    if (!response.ok) {
+      setError(data.error || 'Participation impossible');
+      return;
+    }
+
+    setAttendingEvents((current) => ({ ...current, [eventId]: data.attending }));
     setEvents((current) =>
       current.map((event) =>
         event.id === eventId
           ? {
               ...event,
-              _count: { attendees: event._count.attendees + 1 },
+              _count: {
+                attendees: Math.max(0, event._count.attendees + (data.attending ? 1 : -1)),
+              },
             }
           : event,
       ),
@@ -216,9 +227,13 @@ export default function EventsPage() {
                     <button
                       type="button"
                       onClick={() => void toggleAttendance(event.id)}
-                      className="font-semibold text-blue-700 hover:text-blue-900"
+                      className={`font-semibold ${
+                        attendingEvents[event.id]
+                          ? 'text-green-700 hover:text-green-900'
+                          : 'text-blue-700 hover:text-blue-900'
+                      }`}
                     >
-                      Participer
+                      {attendingEvents[event.id] ? 'Participation confirmée' : 'Participer'}
                     </button>
                   )}
                 </div>

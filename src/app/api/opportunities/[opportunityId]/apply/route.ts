@@ -19,17 +19,40 @@ export async function POST(request: NextRequest, context: RouteContext) {
     }
 
     const body = await request.json();
+    const message = requireString(body.message, 'message');
+    const existingApplication = await prisma.opportunityApplication.findUnique({
+      where: {
+        opportunityId_applicantId: {
+          opportunityId,
+          applicantId: user.id,
+        },
+      },
+    });
+
+    if (existingApplication) {
+      return NextResponse.json(
+        { error: 'You have already applied to this opportunity' },
+        { status: 409 },
+      );
+    }
+
     const application = await prisma.opportunityApplication.create({
       data: {
         opportunityId,
         applicantId: user.id,
-        message: requireString(body.message, 'message'),
+        message,
       },
     });
 
     return NextResponse.json({ application }, { status: 201 });
   } catch (error) {
-    console.error('Error applying to opportunity:', error);
-    return NextResponse.json({ error: 'Failed to apply to opportunity' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Failed to apply to opportunity';
+    const status = message.includes('required') ? 400 : 500;
+
+    if (status === 500) {
+      console.error('Error applying to opportunity:', error);
+    }
+
+    return NextResponse.json({ error: message }, { status });
   }
 }
