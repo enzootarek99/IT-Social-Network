@@ -187,7 +187,8 @@ IT-Social-Network/
 - `/events/[eventId]` - Event details and attendee list
 - `/notifications` - Activity notifications and unread state
 - `/messages` - Private conversations and direct messages
-- `/admin` - Admin panel for moderation and platform stats
+- `/admin/login` - Dedicated admin login
+- `/admin` - Separate admin back-office for moderation and platform stats
 - `/login` and `/register` - Authentication
 
 ## Contributing
