@@ -15,6 +15,7 @@ export function CreatePost({ onCreated }: CreatePostProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [mode, setMode] = useState<'post' | 'video' | 'photo' | 'article'>('post');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string>();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -56,6 +57,37 @@ export function CreatePost({ onCreated }: CreatePostProps) {
     setIsExpanded(true);
   };
 
+  const handleFileUpload = async (file: File | undefined) => {
+    if (!file) {
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      setError(undefined);
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/uploads', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Upload impossible');
+      }
+
+      setImageUrl(data.url);
+      setIsExpanded(true);
+      setMode('photo');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Upload impossible');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const initials = user ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}` : 'NX';
 
   return (
@@ -94,18 +126,22 @@ export function CreatePost({ onCreated }: CreatePostProps) {
           />
 
           {mode === 'photo' && (
-            <label className="mt-4 block text-sm font-medium text-[#888]" htmlFor="post-image-url">
-              Photo URL
+            <label className="mt-4 block text-sm font-medium text-[#888]" htmlFor="post-image-file">
+              Upload photo depuis ton appareil
               <input
-                id="post-image-url"
-                type="url"
-                value={imageUrl}
-                onChange={(event) => setImageUrl(event.target.value)}
-                className="mt-2 w-full rounded-xl border border-[#1e1e24] bg-[#0f0f14] px-4 py-3 text-sm text-[#d0d0dc] placeholder:text-[#555] focus:border-[#4f8ef7]"
-                placeholder="https://example.com/image.png"
+                id="post-image-file"
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                onChange={(event) => void handleFileUpload(event.target.files?.[0])}
+                className="mt-2 w-full rounded-xl border border-[#1e1e24] bg-[#0f0f14] px-4 py-3 text-sm text-[#d0d0dc] file:mr-4 file:rounded-lg file:border-0 file:bg-[#1d3461] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-[#4f8ef7]"
               />
+              <span className="mt-2 block text-xs text-[#555]">
+                PNG, JPG, WebP ou GIF · max 5MB
+              </span>
             </label>
           )}
+
+          {isUploading && <p className="mt-3 text-sm text-[#4f8ef7]">Upload en cours...</p>}
 
           {mode === 'photo' && imageUrl && (
             <div className="mt-4 overflow-hidden rounded-xl border border-[#1e1e24]">
@@ -170,7 +206,7 @@ export function CreatePost({ onCreated }: CreatePostProps) {
             </button>
             <button
               type="submit"
-              disabled={isSubmitting || !content.trim()}
+              disabled={isSubmitting || isUploading || !content.trim()}
               className="rounded-lg bg-[#4f8ef7] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#3675dc] disabled:cursor-not-allowed disabled:bg-[#1d3461]"
             >
               {isSubmitting ? 'Posting...' : 'Post'}

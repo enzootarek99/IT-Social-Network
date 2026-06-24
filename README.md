@@ -7,6 +7,7 @@ Most product pages are member-only: visitors can access login/register/admin-log
 ## Features
 
 - **Feed** - Share text/image updates, projects and insights, like/comment, and delete your own posts.
+- **Image uploads** - Upload feed photos directly from phone or computer.
 - **Saved posts and reports** - Save useful posts and report content to moderation.
 - **Freelance reviews** - Rate and review missions/clients.
 - **Global search and dashboard** - Search across the platform and track personal activity.
@@ -158,6 +159,7 @@ IT-Social-Network/
 - `PATCH|DELETE /api/posts/[postId]`
 - `POST /api/posts/[postId]/like`
 - `POST /api/posts/[postId]/save`
+- `POST /api/uploads`
 - `POST /api/posts/[postId]/comments`
 - `PATCH|DELETE /api/posts/[postId]/comments/[commentId]`
 - `GET|PUT /api/profile`

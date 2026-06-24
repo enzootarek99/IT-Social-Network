@@ -26,8 +26,14 @@ export function optionalUrl(value: unknown, fieldName: string) {
     return null;
   }
 
+  const trimmedValue = value.trim();
+
+  if (trimmedValue.startsWith('/uploads/')) {
+    return trimmedValue;
+  }
+
   try {
-    const url = new URL(value.trim());
+    const url = new URL(trimmedValue);
 
     if (!['http:', 'https:'].includes(url.protocol)) {
       throw new Error();
