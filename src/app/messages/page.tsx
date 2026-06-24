@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, type AuthUser } from '@/contexts';
 import { formatDate } from '@/lib/utils';
@@ -42,7 +42,7 @@ export default function MessagesPage() {
     [conversations, selectedConversationId],
   );
 
-  const loadConversations = async () => {
+  const loadConversations = useCallback(async () => {
     const response = await fetch('/api/conversations', { cache: 'no-store' });
     const data = await response.json();
 
@@ -52,14 +52,10 @@ export default function MessagesPage() {
 
     setConversations(data.conversations);
 
-    if (!selectedConversationId && data.conversations[0]) {
-      setSelectedConversationId(data.conversations[0].id);
-    }
-
     return data.conversations as ConversationSummary[];
-  };
+  }, []);
 
-  const startConversation = async (participantId: string) => {
+  const startConversation = useCallback(async (participantId: string) => {
     const response = await fetch('/api/conversations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -74,7 +70,7 @@ export default function MessagesPage() {
     setSelectedConversationId(data.conversation.id);
     router.replace(`/messages?conversationId=${data.conversation.id}`);
     return data.conversation as ConversationSummary;
-  };
+  }, [router]);
 
   useEffect(() => {
     async function initializeMessages() {
@@ -111,7 +107,7 @@ export default function MessagesPage() {
     }
 
     void initializeMessages();
-  }, [isAuthenticated, isLoading]);
+  }, [isAuthenticated, isLoading, loadConversations, startConversation]);
 
   useEffect(() => {
     async function loadConversation() {
