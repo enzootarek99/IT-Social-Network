@@ -1,22 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getAuthUser } from '@/lib/auth';
 import prisma from '@/lib/db';
+import { createNotification } from '@/lib/notifications';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { followerId, followingId } = body;
+    const user = await getAuthUser(request);
 
-    if (!followerId || !followingId) {
+    if (!user) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { followingId } = body;
+
+    if (!followingId) {
       return NextResponse.json(
-        { error: 'followerId and followingId are required' },
+        { error: 'followingId is required' },
         { status: 400 }
       );
     }
 
-    if (followerId === followingId) {
+    if (user.id === followingId) {
       return NextResponse.json(
         { error: 'Cannot follow yourself' },
         { status: 400 }
+      );
+    }
+
+    const targetUser = await prisma.user.findUnique({
+      where: { id: followingId },
+      select: { id: true },
+    });
+
+    if (!targetUser) {
+      return NextResponse.json(
+        { error: 'User to follow was not found' },
+        { status: 404 }
       );
     }
 
@@ -24,7 +44,7 @@ export async function POST(request: NextRequest) {
     const existingFollow = await prisma.follow.findUnique({
       where: {
         followerId_followingId: {
-          followerId,
+          followerId: user.id,
           followingId,
         },
       },
@@ -42,9 +62,16 @@ export async function POST(request: NextRequest) {
       // Follow
       await prisma.follow.create({
         data: {
-          followerId,
+          followerId: user.id,
           followingId,
         },
+      });
+      await createNotification({
+        recipientId: followingId,
+        actorId: user.id,
+        type: 'follow',
+        message: `${user.firstName} ${user.lastName} vous suit maintenant.`,
+        link: `/profile/${user.username}`,
       });
       return NextResponse.json({ following: true });
     }
@@ -77,6 +104,9 @@ export async function GET(request: NextRequest) {
             select: {
               id: true,
               username: true,
+              firstName: true,
+              lastName: true,
+              title: true,
               avatar: true,
             },
           },
@@ -89,6 +119,9 @@ export async function GET(request: NextRequest) {
             select: {
               id: true,
               username: true,
+              firstName: true,
+              lastName: true,
+              title: true,
               avatar: true,
             },
           },
