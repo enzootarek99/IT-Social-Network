@@ -154,55 +154,152 @@ export default function MarketplacePage() {
   };
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
-        <section>
-          <p className="text-sm font-semibold uppercase tracking-[0.25em] text-blue-700">
-            Freelance Marketplace
-          </p>
-          <h1 className="mt-2 text-4xl font-bold text-slate-900">Trouvez ou publiez une mission IT</h1>
-          <p className="mt-4 text-slate-600">
-            Regroupez les opportunités freelance pertinentes pour les développeurs, DevOps,
-            designers produit, data engineers et équipes tech.
-          </p>
+    <main className="bg-[#0a0a0d] px-4 py-6 text-slate-200 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl overflow-hidden rounded-[1.25rem] border border-[#1e1e24] bg-[#0a0a0d] shadow-2xl">
+        <section className="border-b border-[#1a1a20] bg-[#0d0d12] p-5">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h1 className="font-['Space_Grotesk'] text-2xl font-semibold text-[#e8e8f0]">
+                Marketplace freelance IT
+              </h1>
+              <p className="mt-1 text-sm text-[#666]">
+                {opportunities.length || '—'} missions actives · réseau, sécu, dev, design, cloud
+              </p>
+            </div>
+            {isAuthenticated && (
+              <span className="rounded-lg bg-[#4f8ef7] px-4 py-2 text-xs font-semibold text-white">
+                + Publier un gig
+              </span>
+            )}
+          </div>
 
-          {isAuthenticated ? (
-            <form onSubmit={handleSubmit} className="mt-8 rounded-3xl bg-white p-6 shadow-soft">
-              <h2 className="text-xl font-bold text-slate-900">Publier une mission</h2>
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          <form
+            className="mt-4"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void loadOpportunities(query);
+            }}
+          >
+            <div className="flex items-center gap-2 rounded-lg border border-[#1e1e24] bg-[#131318] px-4 py-3">
+              <span className="text-[#444]">⌕</span>
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                className="w-full bg-transparent text-sm text-slate-200 placeholder:text-[#555]"
+                placeholder="Rechercher une mission (ex: firewall, pentest, React...)"
+              />
+              <button className="rounded-md bg-[#4f8ef7] px-4 py-1.5 text-xs font-semibold text-white">
+                Rechercher
+              </button>
+            </div>
+          </form>
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            {['Tous', 'Network', 'Cybersécurité', 'Développement', 'Design UI/UX', 'Cloud & DevOps', 'Remote'].map(
+              (label) => (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => {
+                    if (label === 'Tous') {
+                      setSkillFilter('');
+                      setRemoteFilter('');
+                    } else if (label === 'Remote') {
+                      setRemoteFilter('true');
+                    } else {
+                      setSkillFilter(label);
+                    }
+                  }}
+                  className={`rounded-full border px-3 py-1 text-xs ${
+                    (label === 'Tous' && !skillFilter && !remoteFilter) ||
+                    skillFilter === label ||
+                    (label === 'Remote' && remoteFilter === 'true')
+                      ? 'border-[#2a3a58] bg-[#12121a] text-[#4f8ef7]'
+                      : 'border-[#1e1e24] text-[#666] hover:text-slate-300'
+                  }`}
+                >
+                  {label}
+                </button>
+              ),
+            )}
+          </div>
+        </section>
+
+        <div className="grid lg:grid-cols-[260px_1fr]">
+          <aside className="border-r border-[#1a1a20] bg-[#080809] p-4">
+            <div className="mb-5">
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#555]">
+                Filtres
+              </h2>
+              <div className="space-y-3">
+                <input
+                  value={skillFilter}
+                  onChange={(event) => setSkillFilter(event.target.value)}
+                  className="w-full rounded-lg border border-[#1e1e24] bg-[#131318] px-3 py-2 text-xs text-slate-200 placeholder:text-[#555]"
+                  placeholder="Compétence"
+                />
+                <select
+                  value={remoteFilter}
+                  onChange={(event) => setRemoteFilter(event.target.value)}
+                  className="w-full rounded-lg border border-[#1e1e24] bg-[#131318] px-3 py-2 text-xs text-slate-200"
+                >
+                  <option value="">Remote / sur site</option>
+                  <option value="true">Remote</option>
+                  <option value="false">Sur site</option>
+                </select>
+                <input
+                  value={contractTypeFilter}
+                  onChange={(event) => setContractTypeFilter(event.target.value)}
+                  className="w-full rounded-lg border border-[#1e1e24] bg-[#131318] px-3 py-2 text-xs text-slate-200 placeholder:text-[#555]"
+                  placeholder="Type contrat"
+                />
+                <button
+                  type="button"
+                  onClick={() => void loadOpportunities(query)}
+                  className="w-full rounded-lg bg-[#4f8ef7] px-3 py-2 text-xs font-semibold text-white"
+                >
+                  Appliquer
+                </button>
+              </div>
+            </div>
+
+            {isAuthenticated ? (
+              <form onSubmit={handleSubmit} className="rounded-xl border border-[#1e1e24] bg-[#0f0f14] p-4">
+                <h2 className="text-sm font-semibold text-[#e8e8f0]">Publier une mission</h2>
+                <div className="mt-4 grid gap-3">
                 <input
                   value={form.title}
                   onChange={(event) => updateForm('title', event.target.value)}
-                  className="rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500"
+                  className="rounded-lg border border-[#1e1e24] bg-[#131318] px-3 py-2 text-xs text-slate-200"
                   placeholder="Titre"
                   required
                 />
                 <input
                   value={form.company}
                   onChange={(event) => updateForm('company', event.target.value)}
-                  className="rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500"
+                  className="rounded-lg border border-[#1e1e24] bg-[#131318] px-3 py-2 text-xs text-slate-200"
                   placeholder="Entreprise"
                   required
                 />
                 <input
                   value={form.budget}
                   onChange={(event) => updateForm('budget', event.target.value)}
-                  className="rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500"
+                  className="rounded-lg border border-[#1e1e24] bg-[#131318] px-3 py-2 text-xs text-slate-200"
                   placeholder="Budget / TJM"
                   required
                 />
                 <input
                   value={form.location}
                   onChange={(event) => updateForm('location', event.target.value)}
-                  className="rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500"
+                  className="rounded-lg border border-[#1e1e24] bg-[#131318] px-3 py-2 text-xs text-slate-200"
                   placeholder="Localisation"
                   required
                 />
-              </div>
+                </div>
               <textarea
                 value={form.description}
                 onChange={(event) => updateForm('description', event.target.value)}
-                className="mt-4 w-full rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500"
+                className="mt-3 w-full rounded-lg border border-[#1e1e24] bg-[#131318] px-3 py-2 text-xs text-slate-200"
                 rows={4}
                 placeholder="Description de la mission"
                 required
@@ -210,10 +307,10 @@ export default function MarketplacePage() {
               <input
                 value={form.skills}
                 onChange={(event) => updateForm('skills', event.target.value)}
-                className="mt-4 w-full rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500"
+                className="mt-3 w-full rounded-lg border border-[#1e1e24] bg-[#131318] px-3 py-2 text-xs text-slate-200"
                 placeholder="Compétences: Next.js, Prisma, PostgreSQL"
               />
-              <label className="mt-4 flex items-center gap-3 text-sm text-slate-700">
+              <label className="mt-3 flex items-center gap-3 text-xs text-[#888]">
                 <input
                   type="checkbox"
                   checked={form.remote}
@@ -222,117 +319,99 @@ export default function MarketplacePage() {
                 />
                 Mission possible à distance
               </label>
-              {error && <p className="mt-4 text-sm text-red-700">{error}</p>}
-              <button className="mt-5 rounded-full bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700">
+              {error && <p className="mt-3 text-xs text-red-400">{error}</p>}
+              <button className="mt-4 w-full rounded-lg bg-[#4f8ef7] px-4 py-2 text-xs font-semibold text-white">
                 Publier
               </button>
             </form>
           ) : (
-            <div className="mt-8 rounded-3xl bg-blue-50 p-6 text-blue-900">
+            <div className="rounded-xl border border-[#1e1e24] bg-[#0f0f14] p-4 text-xs text-[#888]">
               <p className="font-semibold">Connectez-vous pour publier une mission.</p>
-              <Link href="/login" className="mt-3 inline-flex font-semibold text-blue-700">
+              <Link href="/login" className="mt-3 inline-flex font-semibold text-[#4f8ef7]">
                 Se connecter
               </Link>
             </div>
           )}
-        </section>
+          </aside>
 
-        <section>
-          <form
-            className="mb-6 grid gap-3 rounded-3xl bg-white p-4 shadow-soft md:grid-cols-5"
-            onSubmit={(event) => {
-              event.preventDefault();
-              void loadOpportunities(query);
-            }}
-          >
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              className="rounded-full border border-slate-200 px-5 py-3 focus:border-blue-500 md:col-span-2"
-              placeholder="Rechercher une mission"
-            />
-            <input
-              value={skillFilter}
-              onChange={(event) => setSkillFilter(event.target.value)}
-              className="rounded-full border border-slate-200 px-5 py-3 focus:border-blue-500"
-              placeholder="Compétence"
-            />
-            <select
-              value={remoteFilter}
-              onChange={(event) => setRemoteFilter(event.target.value)}
-              className="rounded-full border border-slate-200 px-5 py-3 focus:border-blue-500"
-            >
-              <option value="">Remote / site</option>
-              <option value="true">Remote</option>
-              <option value="false">Sur site</option>
-            </select>
-            <input
-              value={contractTypeFilter}
-              onChange={(event) => setContractTypeFilter(event.target.value)}
-              className="rounded-full border border-slate-200 px-5 py-3 focus:border-blue-500"
-              placeholder="Type"
-            />
-            <button className="rounded-full bg-slate-900 px-5 py-3 font-semibold text-white hover:bg-slate-800 md:col-span-5">
-              Rechercher
-            </button>
-          </form>
-
-          <div className="space-y-5">
+          <section className="bg-[#0a0a0d] p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-xs text-[#666]">{opportunities.length} missions trouvées</p>
+              <select className="rounded-md border border-[#1e1e24] bg-[#131318] px-3 py-1 text-xs text-[#888]">
+                <option>Plus récent</option>
+                <option>Budget ↑</option>
+                <option>Budget ↓</option>
+              </select>
+            </div>
+            <div className="space-y-3">
             {isLoading ? (
-              <div className="rounded-3xl bg-white p-8 text-center text-slate-500 shadow-soft">
+              <div className="rounded-xl border border-[#1e1e24] bg-[#0f0f14] p-8 text-center text-[#666]">
                 Chargement des missions...
               </div>
             ) : opportunities.length > 0 ? (
               opportunities.map((opportunity) => (
-                <article key={opportunity.id} className="rounded-3xl bg-white p-6 shadow-soft">
+                <article
+                  key={opportunity.id}
+                  className="rounded-xl border border-[#1a1a20] bg-[#0f0f14] p-4 transition hover:border-[#2a3a58]"
+                >
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
+                      <div className="mb-2 flex flex-wrap gap-1">
+                        <span className="rounded-full bg-[#0d2040] px-2 py-1 text-[10px] font-medium text-[#4f8ef7]">
+                          {opportunity.contractType}
+                        </span>
+                        {opportunity.remote && (
+                          <span className="rounded-full bg-[#0a2218] px-2 py-1 text-[10px] font-medium text-[#2dd4a0]">
+                            Remote
+                          </span>
+                        )}
+                      </div>
                       <Link
                         href={`/marketplace/${opportunity.id}`}
-                        className="text-xl font-bold text-slate-900 hover:text-blue-700"
+                        className="text-base font-semibold text-[#d0d0dc] hover:text-[#4f8ef7]"
                       >
                         {opportunity.title}
                       </Link>
-                      <p className="mt-1 text-sm text-slate-500">
+                      <p className="mt-1 text-xs text-[#666]">
                         {opportunity.company} · {opportunity.location} ·{' '}
                         {opportunity.remote ? 'Remote' : 'Sur site'}
                       </p>
                     </div>
-                    <span className="rounded-full bg-green-50 px-3 py-1 text-sm font-semibold text-green-700">
+                    <span className="font-['Space_Grotesk'] text-lg font-semibold text-[#4f8ef7]">
                       {opportunity.budget}
                     </span>
                   </div>
-                  <p className="mt-4 text-slate-700">{opportunity.description}</p>
+                  <p className="mt-3 text-sm leading-6 text-[#666]">{opportunity.description}</p>
                   <div className="mt-4 flex flex-wrap gap-2">
                     {opportunity.skills.map((skill) => (
-                      <span key={skill} className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                      <span key={skill} className="rounded-md border border-[#1e1e24] bg-[#131318] px-2 py-1 text-xs text-[#777]">
                         {skill}
                       </span>
                     ))}
                   </div>
-                  <p className="mt-4 text-xs text-slate-500">
+                  <p className="mt-4 border-t border-[#141418] pt-3 text-xs text-[#555]">
                     Publié par {opportunity.author.firstName} {opportunity.author.lastName} ·{' '}
                     {formatDate(opportunity.createdAt)} · {opportunity._count.applications} candidature(s)
                   </p>
                   <Link
                     href={`/marketplace/${opportunity.id}`}
-                    className="mt-4 inline-flex rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:text-blue-700"
+                    className="mt-4 inline-flex rounded-lg border border-[#2a3a58] px-3 py-2 text-xs font-semibold text-[#4f8ef7] hover:bg-[#0d2040]"
                   >
                     Voir le détail
                   </Link>
                   {isAuthenticated ? (
                     <form
                       onSubmit={(event) => void handleApply(event, opportunity.id)}
-                      className="mt-5 rounded-2xl bg-slate-50 p-4"
+                      className="mt-4 rounded-xl border border-[#1e1e24] bg-[#131318] p-3"
                     >
-                      <label className="block text-sm font-semibold text-slate-700">
+                      <label className="block text-xs font-semibold text-[#888]">
                         Message de candidature
                         <textarea
                           value={applicationMessages[opportunity.id] || ''}
                           onChange={(event) =>
                             updateApplicationMessage(opportunity.id, event.target.value)
                           }
-                          className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500"
+                          className="mt-2 w-full rounded-lg border border-[#1e1e24] bg-[#0f0f14] px-3 py-2 text-xs text-slate-200"
                           rows={3}
                           placeholder="Présentez rapidement votre disponibilité et votre expérience."
                         />
@@ -340,30 +419,31 @@ export default function MarketplacePage() {
                       <button
                         type="submit"
                         disabled={!applicationMessages[opportunity.id]?.trim()}
-                        className="mt-3 rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+                        className="mt-3 rounded-lg bg-[#4f8ef7] px-4 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:bg-[#2a3a58]"
                       >
                         Candidater
                       </button>
                       {applicationStatus[opportunity.id] && (
-                        <p className="mt-3 text-sm text-slate-600">
+                        <p className="mt-3 text-xs text-[#888]">
                           {applicationStatus[opportunity.id]}
                         </p>
                       )}
                     </form>
                   ) : (
-                    <p className="mt-5 rounded-2xl bg-blue-50 px-4 py-3 text-sm text-blue-900">
+                    <p className="mt-4 rounded-xl border border-[#1e1e24] bg-[#131318] px-4 py-3 text-xs text-[#888]">
                       Connectez-vous pour candidater à cette mission.
                     </p>
                   )}
                 </article>
               ))
             ) : (
-              <div className="rounded-3xl bg-white p-8 text-center text-slate-500 shadow-soft">
+              <div className="rounded-xl border border-[#1e1e24] bg-[#0f0f14] p-8 text-center text-[#666]">
                 Aucune mission trouvée.
               </div>
             )}
           </div>
         </section>
+        </div>
       </div>
     </main>
   );

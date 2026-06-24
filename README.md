@@ -10,6 +10,7 @@ A modern social network platform designed specifically for IT professionals. Con
 - **Network discovery** - Search IT professionals and follow/unfollow profiles.
 - **Freelance Marketplace** - Find, publish, inspect and apply to freelance opportunities.
 - **Events** - Discover, create, inspect and join IT events and meetups.
+- **NexusIT-style pages** - Dark dashboard-inspired layouts for freelance and activities pages.
 - **Notifications** - Track follows, comments, applications and event participation.
 - **Private messaging** - Start direct conversations and exchange messages with network members.
 - **Admin panel** - WordPress-style back-office with access to users, posts, comments, missions, events, conversations, messages and notifications.
