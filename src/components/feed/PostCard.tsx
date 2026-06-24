@@ -8,14 +8,15 @@ import type { FeedComment, FeedPost } from './types';
 
 type PostCardProps = {
   post: FeedPost;
+  onDeleted?: (postId: string) => void;
 };
 
 function initials(firstName: string, lastName: string) {
   return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
 }
 
-export function PostCard({ post }: PostCardProps) {
-  const { isAuthenticated } = useAuth();
+export function PostCard({ post, onDeleted }: PostCardProps) {
+  const { isAuthenticated, user } = useAuth();
   const [likeCount, setLikeCount] = useState(post._count.likes);
   const [commentCount, setCommentCount] = useState(post._count.comments);
   const [comments, setComments] = useState<FeedComment[]>(post.comments);
@@ -24,6 +25,8 @@ export function PostCard({ post }: PostCardProps) {
   const [liked, setLiked] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isCommenting, setIsCommenting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [postError, setPostError] = useState<string>();
 
   const toggleLike = async () => {
     try {
@@ -39,6 +42,29 @@ export function PostCard({ post }: PostCardProps) {
       setLikeCount((current) => current + (data.liked ? 1 : -1));
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm('Supprimer cette publication ?')) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      setPostError(undefined);
+      const response = await fetch(`/api/posts/${post.id}`, { method: 'DELETE' });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Suppression impossible');
+      }
+
+      onDeleted?.(post.id);
+    } catch (err) {
+      setPostError(err instanceof Error ? err.message : 'Suppression impossible');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -75,31 +101,46 @@ export function PostCard({ post }: PostCardProps) {
 
   return (
     <article className="rounded-3xl bg-white p-6 shadow-soft">
-      <div className="flex items-start gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-700">
-          {post.author.avatar ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={post.author.avatar}
-              alt={`${post.author.firstName} ${post.author.lastName}`}
-              className="h-12 w-12 rounded-full object-cover"
-            />
-          ) : (
-            initials(post.author.firstName, post.author.lastName)
-          )}
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-700">
+            {post.author.avatar ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={post.author.avatar}
+                alt={`${post.author.firstName} ${post.author.lastName}`}
+                className="h-12 w-12 rounded-full object-cover"
+              />
+            ) : (
+              initials(post.author.firstName, post.author.lastName)
+            )}
+          </div>
+          <div className="min-w-0">
+            <Link
+              href={`/profile/${post.author.username}`}
+              className="font-semibold text-slate-900 hover:text-blue-700"
+            >
+              {post.author.firstName} {post.author.lastName}
+            </Link>
+            <p className="text-sm text-slate-500">
+              {post.author.title || 'Professionnel IT'} · {formatDate(post.createdAt)}
+            </p>
+          </div>
         </div>
-        <div className="min-w-0">
-          <Link
-            href={`/profile/${post.author.username}`}
-            className="font-semibold text-slate-900 hover:text-blue-700"
+
+        {user?.id === post.author.id && (
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="rounded-full border border-red-100 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:text-red-300"
           >
-            {post.author.firstName} {post.author.lastName}
-          </Link>
-          <p className="text-sm text-slate-500">
-            {post.author.title || 'Professionnel IT'} · {formatDate(post.createdAt)}
-          </p>
-        </div>
+            {isDeleting ? 'Suppression...' : 'Supprimer'}
+          </button>
+        )}
       </div>
+
+      {postError && <p className="mt-4 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{postError}</p>}
 
       <p className="mt-5 whitespace-pre-wrap text-slate-700">{post.content}</p>
 

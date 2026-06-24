@@ -45,7 +45,15 @@ export function Feed() {
           Chargement du feed...
         </div>
       ) : posts.length > 0 ? (
-        posts.map((post) => <PostCard key={post.id} post={post} />)
+        posts.map((post) => (
+          <PostCard
+            key={post.id}
+            post={post}
+            onDeleted={(postId) =>
+              setPosts((current) => current.filter((currentPost) => currentPost.id !== postId))
+            }
+          />
+        ))
       ) : (
         <div className="rounded-3xl bg-white p-8 text-center text-slate-500 shadow-soft">
           Aucun post pour le moment. Soyez le premier à partager une actualité.

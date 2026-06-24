@@ -9,6 +9,7 @@ type CreatePostProps = {
 
 export function CreatePost({ onCreated }: CreatePostProps) {
   const [content, setContent] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string>();
 
@@ -26,7 +27,7 @@ export function CreatePost({ onCreated }: CreatePostProps) {
       const response = await fetch('/api/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content }),
+        body: JSON.stringify({ content, imageUrl }),
       });
       const data = await response.json();
 
@@ -36,6 +37,7 @@ export function CreatePost({ onCreated }: CreatePostProps) {
 
       onCreated(data.post);
       setContent('');
+      setImageUrl('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Publication impossible');
     } finally {
@@ -56,6 +58,23 @@ export function CreatePost({ onCreated }: CreatePostProps) {
         className="mt-3 w-full rounded-2xl border border-slate-200 px-4 py-3 text-slate-900 focus:border-blue-500"
         placeholder="Ex: Je viens de publier un article sur Kubernetes..."
       />
+      <label className="mt-4 block text-sm font-medium text-slate-700" htmlFor="post-image-url">
+        Image optionnelle
+        <input
+          id="post-image-url"
+          type="url"
+          value={imageUrl}
+          onChange={(event) => setImageUrl(event.target.value)}
+          className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-blue-500"
+          placeholder="https://example.com/image.png"
+        />
+      </label>
+      {imageUrl && (
+        <div className="mt-4 overflow-hidden rounded-2xl border border-slate-100">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={imageUrl} alt="Aperçu" className="max-h-72 w-full object-cover" />
+        </div>
+      )}
       {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
       <div className="mt-4 flex justify-end">
         <button
