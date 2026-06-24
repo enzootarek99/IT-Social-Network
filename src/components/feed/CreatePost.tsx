@@ -46,8 +46,8 @@ export function CreatePost({ onCreated }: CreatePostProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-3xl bg-white p-6 shadow-soft">
-      <label className="block text-sm font-semibold text-slate-700" htmlFor="post-content">
+    <form onSubmit={handleSubmit} className="rounded-xl border border-[#1e1e24] bg-[#161618] p-4">
+      <label className="block text-sm font-semibold text-[#d0d0dc]" htmlFor="post-content">
         Partager une actualité, un projet ou une idée
       </label>
       <textarea
@@ -55,32 +55,32 @@ export function CreatePost({ onCreated }: CreatePostProps) {
         value={content}
         onChange={(event) => setContent(event.target.value)}
         rows={4}
-        className="mt-3 w-full rounded-2xl border border-slate-200 px-4 py-3 text-slate-900 focus:border-blue-500"
+        className="mt-3 w-full rounded-xl border border-[#1e1e24] bg-[#0f0f14] px-4 py-3 text-sm text-[#d0d0dc] placeholder:text-[#555] focus:border-[#4f8ef7]"
         placeholder="Ex: Je viens de publier un article sur Kubernetes..."
       />
-      <label className="mt-4 block text-sm font-medium text-slate-700" htmlFor="post-image-url">
+      <label className="mt-4 block text-sm font-medium text-[#888]" htmlFor="post-image-url">
         Image optionnelle
         <input
           id="post-image-url"
           type="url"
           value={imageUrl}
           onChange={(event) => setImageUrl(event.target.value)}
-          className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-blue-500"
+          className="mt-2 w-full rounded-xl border border-[#1e1e24] bg-[#0f0f14] px-4 py-3 text-sm text-[#d0d0dc] placeholder:text-[#555] focus:border-[#4f8ef7]"
           placeholder="https://example.com/image.png"
         />
       </label>
       {imageUrl && (
-        <div className="mt-4 overflow-hidden rounded-2xl border border-slate-100">
+        <div className="mt-4 overflow-hidden rounded-xl border border-[#1e1e24]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={imageUrl} alt="Aperçu" className="max-h-72 w-full object-cover" />
         </div>
       )}
-      {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+      {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
       <div className="mt-4 flex justify-end">
         <button
           type="submit"
           disabled={isSubmitting || !content.trim()}
-          className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+          className="rounded-lg bg-[#4f8ef7] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#3675dc] disabled:cursor-not-allowed disabled:bg-[#1d3461]"
         >
           {isSubmitting ? 'Publication...' : 'Publier'}
         </button>

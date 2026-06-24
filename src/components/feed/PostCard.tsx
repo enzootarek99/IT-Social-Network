@@ -224,10 +224,10 @@ export function PostCard({ post, onUpdated, onDeleted }: PostCardProps) {
   };
 
   return (
-    <article className="rounded-3xl bg-white p-6 shadow-soft">
+    <article className="rounded-xl border border-[#1e1e24] bg-[#161618] p-4">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-700">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#1d3461] font-bold text-[#4f8ef7]">
             {currentPost.author.avatar ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -242,11 +242,11 @@ export function PostCard({ post, onUpdated, onDeleted }: PostCardProps) {
           <div className="min-w-0">
             <Link
               href={`/profile/${currentPost.author.username}`}
-              className="font-semibold text-slate-900 hover:text-blue-700"
+              className="font-semibold text-[#d0d0dc] hover:text-[#4f8ef7]"
             >
               {currentPost.author.firstName} {currentPost.author.lastName}
             </Link>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-[#555]">
               {currentPost.author.title || 'Professionnel IT'} · {formatDate(currentPost.createdAt)}
             </p>
           </div>
@@ -257,7 +257,7 @@ export function PostCard({ post, onUpdated, onDeleted }: PostCardProps) {
             <button
               type="button"
               onClick={() => setIsEditing((value) => !value)}
-              className="rounded-full border border-blue-100 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-50"
+              className="rounded-full border border-[#2a3a58] px-3 py-1.5 text-xs font-semibold text-[#4f8ef7] hover:bg-[#0d2040]"
             >
               {isEditing ? 'Annuler' : 'Modifier'}
             </button>
@@ -265,7 +265,7 @@ export function PostCard({ post, onUpdated, onDeleted }: PostCardProps) {
               type="button"
               onClick={handleDelete}
               disabled={isDeleting}
-              className="rounded-full border border-red-100 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:text-red-300"
+              className="rounded-full border border-red-900/40 px-3 py-1.5 text-xs font-semibold text-red-400 hover:bg-red-950/40 disabled:cursor-not-allowed disabled:text-red-900"
             >
               {isDeleting ? 'Suppression...' : 'Supprimer'}
             </button>
@@ -273,46 +273,46 @@ export function PostCard({ post, onUpdated, onDeleted }: PostCardProps) {
         )}
       </div>
 
-      {postError && <p className="mt-4 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{postError}</p>}
+      {postError && <p className="mt-4 rounded-xl border border-red-900/40 bg-red-950/40 px-4 py-3 text-sm text-red-300">{postError}</p>}
 
       {isEditing ? (
-        <form onSubmit={handleUpdate} className="mt-5 rounded-2xl bg-slate-50 p-4">
+        <form onSubmit={handleUpdate} className="mt-5 rounded-xl border border-[#1e1e24] bg-[#0f0f14] p-4">
           <textarea
             value={editContent}
             onChange={(event) => setEditContent(event.target.value)}
-            className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500"
+            className="w-full rounded-xl border border-[#1e1e24] bg-[#0a0a0d] px-4 py-3 text-sm text-[#d0d0dc] focus:border-[#4f8ef7]"
             rows={4}
           />
           <input
             type="url"
             value={editImageUrl}
             onChange={(event) => setEditImageUrl(event.target.value)}
-            className="mt-3 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500"
+            className="mt-3 w-full rounded-xl border border-[#1e1e24] bg-[#0a0a0d] px-4 py-3 text-sm text-[#d0d0dc] focus:border-[#4f8ef7]"
             placeholder="URL image"
           />
           <button
             type="submit"
             disabled={isUpdating || !editContent.trim()}
-            className="mt-3 rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+            className="mt-3 rounded-lg bg-[#4f8ef7] px-5 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-[#1d3461]"
           >
             Enregistrer
           </button>
         </form>
       ) : (
-        <p className="mt-5 whitespace-pre-wrap text-slate-700">{currentPost.content}</p>
+        <p className="mt-5 whitespace-pre-wrap text-sm leading-6 text-[#888]">{currentPost.content}</p>
       )}
 
       {!isEditing && currentPost.imageUrl && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={currentPost.imageUrl} alt="" className="mt-5 max-h-96 w-full rounded-2xl object-cover" />
+        <img src={currentPost.imageUrl} alt="" className="mt-5 max-h-96 w-full rounded-xl object-cover" />
       )}
 
-      <div className="mt-5 flex items-center gap-4 border-t border-slate-100 pt-4 text-sm text-slate-500">
+      <div className="mt-5 flex flex-wrap items-center gap-4 border-t border-[#1e1e22] pt-4 text-sm text-[#555]">
         <button
           type="button"
           onClick={toggleLike}
           disabled={isUpdating}
-          className={`font-semibold ${liked ? 'text-blue-700' : 'text-slate-600 hover:text-blue-700'}`}
+          className={`font-semibold ${liked ? 'text-[#4f8ef7]' : 'text-[#666] hover:text-[#4f8ef7]'}`}
         >
           {liked ? 'Aimé' : 'J’aime'} ({likeCount})
         </button>
@@ -322,14 +322,14 @@ export function PostCard({ post, onUpdated, onDeleted }: PostCardProps) {
             <button
               type="button"
               onClick={() => void toggleSave()}
-              className={`font-semibold ${saved ? 'text-blue-700' : 'text-slate-600 hover:text-blue-700'}`}
+              className={`font-semibold ${saved ? 'text-[#4f8ef7]' : 'text-[#666] hover:text-[#4f8ef7]'}`}
             >
               {saved ? 'Sauvé' : 'Sauver'}
             </button>
             <button
               type="button"
               onClick={() => void reportPost()}
-              className="font-semibold text-slate-500 hover:text-red-600"
+              className="font-semibold text-[#555] hover:text-red-400"
             >
               Signaler
             </button>
@@ -338,13 +338,13 @@ export function PostCard({ post, onUpdated, onDeleted }: PostCardProps) {
       </div>
 
       {(comments.length > 0 || isAuthenticated) && (
-        <div className="mt-5 space-y-4 border-t border-slate-100 pt-5">
+        <div className="mt-5 space-y-4 border-t border-[#1e1e22] pt-5">
           {comments.map((comment) => (
-            <div key={comment.id} className="rounded-2xl bg-slate-50 px-4 py-3">
+            <div key={comment.id} className="rounded-xl border border-[#1e1e24] bg-[#0f0f14] px-4 py-3">
               <div className="flex items-start justify-between gap-3">
                 <Link
                   href={`/profile/${comment.author.username}`}
-                  className="text-sm font-semibold text-slate-900 hover:text-blue-700"
+                  className="text-sm font-semibold text-[#d0d0dc] hover:text-[#4f8ef7]"
                 >
                   {comment.author.firstName} {comment.author.lastName}
                 </Link>
@@ -356,14 +356,14 @@ export function PostCard({ post, onUpdated, onDeleted }: PostCardProps) {
                         setEditingCommentId(comment.id);
                         setEditingCommentContent(comment.content);
                       }}
-                      className="text-xs font-semibold text-blue-700 hover:text-blue-900"
+                      className="text-xs font-semibold text-[#4f8ef7]"
                     >
                       Modifier
                     </button>
                     <button
                       type="button"
                       onClick={() => void handleCommentDelete(comment.id)}
-                      className="text-xs font-semibold text-red-600 hover:text-red-700"
+                      className="text-xs font-semibold text-red-400"
                     >
                       Supprimer
                     </button>
@@ -375,18 +375,18 @@ export function PostCard({ post, onUpdated, onDeleted }: PostCardProps) {
                   <input
                     value={editingCommentContent}
                     onChange={(event) => setEditingCommentContent(event.target.value)}
-                    className="w-full rounded-full border border-slate-200 px-4 py-2 text-sm focus:border-blue-500"
+                    className="w-full rounded-full border border-[#1e1e24] bg-[#0a0a0d] px-4 py-2 text-sm text-[#d0d0dc] focus:border-[#4f8ef7]"
                   />
                   <button
                     type="submit"
                     disabled={!editingCommentContent.trim()}
-                    className="mt-2 rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+                    className="mt-2 rounded-full bg-[#4f8ef7] px-4 py-1.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:bg-[#1d3461]"
                   >
                     Enregistrer
                   </button>
                 </form>
               ) : (
-                <p className="mt-1 text-sm text-slate-700">{comment.content}</p>
+                <p className="mt-1 text-sm text-[#888]">{comment.content}</p>
               )}
             </div>
           ))}
@@ -396,20 +396,20 @@ export function PostCard({ post, onUpdated, onDeleted }: PostCardProps) {
               <input
                 value={commentContent}
                 onChange={(event) => setCommentContent(event.target.value)}
-                className="flex-1 rounded-full border border-slate-200 px-4 py-2 text-sm focus:border-blue-500"
+                className="flex-1 rounded-full border border-[#1e1e24] bg-[#0a0a0d] px-4 py-2 text-sm text-[#d0d0dc] placeholder:text-[#555] focus:border-[#4f8ef7]"
                 placeholder="Ajouter un commentaire"
               />
               <button
                 type="submit"
                 disabled={isCommenting || !commentContent.trim()}
-                className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+                className="rounded-full bg-[#4f8ef7] px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-[#1d3461]"
               >
                 Envoyer
               </button>
             </form>
           )}
 
-          {commentError && <p className="text-sm text-red-700">{commentError}</p>}
+          {commentError && <p className="text-sm text-red-300">{commentError}</p>}
         </div>
       )}
     </article>

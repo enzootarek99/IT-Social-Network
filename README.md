@@ -2,6 +2,8 @@
 
 A modern platform for IT professionals, students, freelancers and tech communities. Connect, share, collaborate, join activities and grow your career.
 
+Most product pages are member-only: visitors can access login/register/admin-login, then authenticated users access the NexusIT feed, network, marketplace, activities, saved posts, messages and dashboards.
+
 ## Features
 
 - **Feed** - Share text/image updates, projects and insights, like/comment, and delete your own posts.

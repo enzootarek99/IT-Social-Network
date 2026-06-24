@@ -38,10 +38,10 @@ export function Feed() {
     <section className="space-y-6">
       {isAuthenticated && <CreatePost onCreated={(post) => setPosts((current) => [post, ...current])} />}
 
-      {error && <div className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+      {error && <div className="rounded-xl border border-red-900/40 bg-red-950/40 px-4 py-3 text-sm text-red-300">{error}</div>}
 
       {isLoading ? (
-        <div className="rounded-3xl bg-white p-8 text-center text-slate-500 shadow-soft">
+        <div className="rounded-xl border border-[#1e1e24] bg-[#161618] p-8 text-center text-[#666]">
           Chargement du feed...
         </div>
       ) : posts.length > 0 ? (
@@ -62,7 +62,7 @@ export function Feed() {
           />
         ))
       ) : (
-        <div className="rounded-3xl bg-white p-8 text-center text-slate-500 shadow-soft">
+        <div className="rounded-xl border border-[#1e1e24] bg-[#161618] p-8 text-center text-[#666]">
           Aucun post pour le moment. Soyez le premier à partager une actualité.
         </div>
       )}

@@ -61,10 +61,10 @@ export function NavBar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#d3d1c7] bg-[#f5f4f0]/95 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-[#1a1a20] bg-[#080809]/95 backdrop-blur">
       <nav className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
         <Link href="/" onClick={closeMobileMenu} className="flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#178FD8] text-white">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#1d3461] text-[#4f8ef7]">
             <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <circle cx="12" cy="5" r="2" />
               <circle cx="5" cy="19" r="2" />
@@ -74,7 +74,7 @@ export function NavBar() {
               <line x1="5" y1="19" x2="19" y2="19" />
             </svg>
           </span>
-          <span className="font-['Space_Grotesk'] text-xl font-bold text-[#1a1a18]">NexusIT</span>
+          <span className="font-['Space_Grotesk'] text-xl font-bold text-[#e8e8f0]">NexusIT</span>
         </Link>
 
         <div className="hidden items-center gap-2 md:flex">
@@ -84,8 +84,8 @@ export function NavBar() {
               href={link.href}
               className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                 pathname === link.href
-                  ? 'bg-[#178FD8] text-white'
-                  : 'text-[#6b6b66] hover:bg-white hover:text-[#178FD8]'
+                  ? 'bg-[#13131a] text-[#e8e8f0]'
+                  : 'text-[#666] hover:bg-[#13131a] hover:text-[#d0d0dc]'
               }`}
             >
               {link.label}
@@ -100,8 +100,8 @@ export function NavBar() {
                 href="/notifications"
                 className={`relative rounded-full px-4 py-2 text-sm font-medium ${
                   pathname === '/notifications'
-                    ? 'bg-[#178FD8] text-white'
-                    : 'text-[#1a1a18] hover:text-[#178FD8]'
+                    ? 'bg-[#13131a] text-[#e8e8f0]'
+                    : 'text-[#888] hover:text-[#4f8ef7]'
                 }`}
               >
                 Notifications
@@ -115,19 +115,19 @@ export function NavBar() {
                 href="/messages"
                 className={`rounded-full px-4 py-2 text-sm font-medium ${
                   pathname === '/messages'
-                    ? 'bg-[#178FD8] text-white'
-                    : 'text-[#1a1a18] hover:text-[#178FD8]'
+                    ? 'bg-[#13131a] text-[#e8e8f0]'
+                    : 'text-[#888] hover:text-[#4f8ef7]'
                 }`}
               >
                 Messages
               </Link>
-              <span className="hidden text-sm text-slate-600 sm:inline">
+              <span className="hidden text-sm text-[#888] sm:inline">
                 {user?.firstName} {user?.lastName}
               </span>
               <button
                 type="button"
                 onClick={handleLogout}
-                className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:border-blue-500 hover:text-blue-700"
+                className="rounded-full border border-[#1e1e24] px-4 py-2 text-sm font-medium text-[#888] hover:border-[#4f8ef7] hover:text-[#4f8ef7]"
               >
                 Déconnexion
               </button>
@@ -136,13 +136,13 @@ export function NavBar() {
             <>
               <Link
                 href="/login"
-                className="rounded-full px-4 py-2 text-sm font-medium text-slate-700 hover:text-blue-700"
+                className="rounded-full px-4 py-2 text-sm font-medium text-[#888] hover:text-[#4f8ef7]"
               >
                 Connexion
               </Link>
               <Link
                 href="/register"
-                className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+                className="rounded-full bg-[#4f8ef7] px-4 py-2 text-sm font-semibold text-white hover:bg-[#3675dc]"
               >
                 Rejoindre
               </Link>
@@ -153,7 +153,7 @@ export function NavBar() {
         <button
           type="button"
           onClick={() => setIsMobileMenuOpen((current) => !current)}
-          className="inline-flex items-center justify-center rounded-2xl border border-[#d3d1c7] bg-white px-4 py-2 text-sm font-semibold text-[#1a1a18] md:hidden"
+          className="inline-flex items-center justify-center rounded-2xl border border-[#1e1e24] bg-[#131318] px-4 py-2 text-sm font-semibold text-[#d0d0dc] md:hidden"
           aria-expanded={isMobileMenuOpen}
           aria-label="Ouvrir le menu"
         >
@@ -162,7 +162,7 @@ export function NavBar() {
       </nav>
 
       {isMobileMenuOpen && (
-        <div className="border-t border-slate-100 bg-white px-4 py-4 shadow-soft md:hidden">
+        <div className="border-t border-[#1a1a20] bg-[#080809] px-4 py-4 shadow-soft md:hidden">
           <div className="space-y-2">
             {[...links, ...(user?.role === 'ADMIN' ? [adminLink] : [])].map((link) => (
               <Link
@@ -171,8 +171,8 @@ export function NavBar() {
                 onClick={closeMobileMenu}
                 className={`block rounded-2xl px-4 py-3 text-sm font-semibold ${
                   pathname === link.href
-                    ? 'bg-[#178FD8] text-white'
-                    : 'bg-white text-[#1a1a18] hover:bg-[#eff6ff] hover:text-[#178FD8]'
+                    ? 'bg-[#13131a] text-[#e8e8f0]'
+                    : 'bg-[#0f0f14] text-[#888] hover:bg-[#13131a] hover:text-[#4f8ef7]'
                 }`}
               >
                 {link.label}
@@ -188,8 +188,8 @@ export function NavBar() {
                   onClick={closeMobileMenu}
                   className={`flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold ${
                     pathname === '/notifications'
-                      ? 'bg-[#178FD8] text-white'
-                      : 'bg-white text-[#1a1a18] hover:bg-[#eff6ff] hover:text-[#178FD8]'
+                      ? 'bg-[#13131a] text-[#e8e8f0]'
+                      : 'bg-[#0f0f14] text-[#888] hover:bg-[#13131a] hover:text-[#4f8ef7]'
                   }`}
                 >
                   <span>Notifications</span>
@@ -204,19 +204,19 @@ export function NavBar() {
                   onClick={closeMobileMenu}
                   className={`block rounded-2xl px-4 py-3 text-sm font-semibold ${
                     pathname === '/messages'
-                      ? 'bg-[#178FD8] text-white'
-                      : 'bg-white text-[#1a1a18] hover:bg-[#eff6ff] hover:text-[#178FD8]'
+                      ? 'bg-[#13131a] text-[#e8e8f0]'
+                      : 'bg-[#0f0f14] text-[#888] hover:bg-[#13131a] hover:text-[#4f8ef7]'
                   }`}
                 >
                   Messages
                 </Link>
-                <div className="rounded-2xl bg-white px-4 py-3 text-sm text-[#6b6b66]">
+                <div className="rounded-2xl bg-[#0f0f14] px-4 py-3 text-sm text-[#888]">
                   Connecté: {user?.firstName} {user?.lastName}
                 </div>
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="w-full rounded-2xl border border-[#d3d1c7] bg-white px-4 py-3 text-left text-sm font-semibold text-[#1a1a18] hover:border-[#178FD8] hover:text-[#178FD8]"
+                  className="w-full rounded-2xl border border-[#1e1e24] bg-[#0f0f14] px-4 py-3 text-left text-sm font-semibold text-[#888] hover:border-[#4f8ef7] hover:text-[#4f8ef7]"
                 >
                   Déconnexion
                 </button>
@@ -226,14 +226,14 @@ export function NavBar() {
                 <Link
                   href="/login"
                   onClick={closeMobileMenu}
-                  className="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-[#1a1a18] hover:bg-[#eff6ff] hover:text-[#178FD8]"
+                  className="rounded-2xl bg-[#0f0f14] px-4 py-3 text-sm font-semibold text-[#888] hover:bg-[#13131a] hover:text-[#4f8ef7]"
                 >
                   Connexion
                 </Link>
                 <Link
                   href="/register"
                   onClick={closeMobileMenu}
-                  className="rounded-2xl bg-[#178FD8] px-4 py-3 text-sm font-semibold text-white hover:bg-[#0f75b5]"
+                  className="rounded-2xl bg-[#4f8ef7] px-4 py-3 text-sm font-semibold text-white hover:bg-[#3675dc]"
                 >
                   Rejoindre
                 </Link>
