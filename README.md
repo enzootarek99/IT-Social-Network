@@ -55,8 +55,7 @@ cp .env.example .env
 
 4. Set up the database and Prisma client:
 ```bash
-npm run prisma:generate
-npm run prisma:migrate
+npm run db:setup
 ```
 
 5. Optional: add demo data:
@@ -110,6 +109,7 @@ npm run build            # Build for production
 npm run start            # Start the production server
 npm run lint             # Run ESLint
 npm run typecheck        # Run TypeScript checks
+npm run db:setup         # Generate Prisma Client, migrate DB and seed demo data
 npm run prisma:generate  # Generate Prisma Client
 npm run prisma:migrate   # Create/apply a local Prisma migration
 npm run prisma:studio    # Open Prisma Studio

@@ -7,6 +7,38 @@ dotenv.config({ path: '.env' });
 
 const prisma = new PrismaClient();
 
+function printSeedHelp(error) {
+  const code = error && typeof error === 'object' && 'code' in error ? error.code : undefined;
+  const message = error instanceof Error ? error.message : String(error);
+
+  console.error('\nSeed failed.');
+
+  if (
+    code === 'P2021' ||
+    code === 'P2022' ||
+    message.includes('does not exist') ||
+    message.includes('table') ||
+    message.includes('column')
+  ) {
+    console.error(
+      'The database schema is not up to date. Run: npm run prisma:migrate && npm run db:seed',
+    );
+  } else if (
+    code === 'P1001' ||
+    code === 'P1002' ||
+    message.includes('Can\'t reach database server')
+  ) {
+    console.error('PostgreSQL is not reachable. Start PostgreSQL and verify DATABASE_URL.');
+  } else if (message.includes('Environment variable not found: DATABASE_URL')) {
+    console.error('DATABASE_URL is missing. Copy .env.example to .env and .env.local.');
+  } else {
+    console.error('Run node prisma/seed.js to inspect the full error if needed.');
+  }
+
+  console.error('\nOriginal error:');
+  console.error(error);
+}
+
 async function upsertUser(user) {
   return prisma.user.upsert({
     where: { email: user.email },
@@ -419,7 +451,7 @@ async function main() {
 
 main()
   .catch((error) => {
-    console.error(error);
+    printSeedHelp(error);
     process.exit(1);
   })
   .finally(async () => {
