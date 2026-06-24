@@ -59,10 +59,20 @@ export function NavBar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-[#d3d1c7] bg-[#f5f4f0]/95 backdrop-blur">
       <nav className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
-        <Link href="/" onClick={closeMobileMenu} className="text-xl font-bold text-blue-700">
-          IT Social Network
+        <Link href="/" onClick={closeMobileMenu} className="flex items-center gap-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#178FD8] text-white">
+            <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="5" r="2" />
+              <circle cx="5" cy="19" r="2" />
+              <circle cx="19" cy="19" r="2" />
+              <line x1="12" y1="7" x2="5" y2="17" />
+              <line x1="12" y1="7" x2="19" y2="17" />
+              <line x1="5" y1="19" x2="19" y2="19" />
+            </svg>
+          </span>
+          <span className="font-['Space_Grotesk'] text-xl font-bold text-[#1a1a18]">NexusIT</span>
         </Link>
 
         <div className="hidden items-center gap-2 md:flex">
@@ -72,8 +82,8 @@ export function NavBar() {
               href={link.href}
               className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                 pathname === link.href
-                  ? 'bg-blue-600 text-white'
-                  : 'text-slate-600 hover:bg-blue-50 hover:text-blue-700'
+                  ? 'bg-[#178FD8] text-white'
+                  : 'text-[#6b6b66] hover:bg-white hover:text-[#178FD8]'
               }`}
             >
               {link.label}
@@ -88,8 +98,8 @@ export function NavBar() {
                 href="/notifications"
                 className={`relative rounded-full px-4 py-2 text-sm font-medium ${
                   pathname === '/notifications'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-slate-700 hover:text-blue-700'
+                    ? 'bg-[#178FD8] text-white'
+                    : 'text-[#1a1a18] hover:text-[#178FD8]'
                 }`}
               >
                 Notifications
@@ -103,8 +113,8 @@ export function NavBar() {
                 href="/messages"
                 className={`rounded-full px-4 py-2 text-sm font-medium ${
                   pathname === '/messages'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-slate-700 hover:text-blue-700'
+                    ? 'bg-[#178FD8] text-white'
+                    : 'text-[#1a1a18] hover:text-[#178FD8]'
                 }`}
               >
                 Messages
@@ -141,7 +151,7 @@ export function NavBar() {
         <button
           type="button"
           onClick={() => setIsMobileMenuOpen((current) => !current)}
-          className="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 md:hidden"
+          className="inline-flex items-center justify-center rounded-2xl border border-[#d3d1c7] bg-white px-4 py-2 text-sm font-semibold text-[#1a1a18] md:hidden"
           aria-expanded={isMobileMenuOpen}
           aria-label="Ouvrir le menu"
         >
@@ -159,8 +169,8 @@ export function NavBar() {
                 onClick={closeMobileMenu}
                 className={`block rounded-2xl px-4 py-3 text-sm font-semibold ${
                   pathname === link.href
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-slate-50 text-slate-700 hover:bg-blue-50 hover:text-blue-700'
+                    ? 'bg-[#178FD8] text-white'
+                    : 'bg-white text-[#1a1a18] hover:bg-[#eff6ff] hover:text-[#178FD8]'
                 }`}
               >
                 {link.label}
@@ -176,8 +186,8 @@ export function NavBar() {
                   onClick={closeMobileMenu}
                   className={`flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold ${
                     pathname === '/notifications'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-50 text-slate-700 hover:bg-blue-50 hover:text-blue-700'
+                      ? 'bg-[#178FD8] text-white'
+                      : 'bg-white text-[#1a1a18] hover:bg-[#eff6ff] hover:text-[#178FD8]'
                   }`}
                 >
                   <span>Notifications</span>
@@ -192,19 +202,19 @@ export function NavBar() {
                   onClick={closeMobileMenu}
                   className={`block rounded-2xl px-4 py-3 text-sm font-semibold ${
                     pathname === '/messages'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-50 text-slate-700 hover:bg-blue-50 hover:text-blue-700'
+                      ? 'bg-[#178FD8] text-white'
+                      : 'bg-white text-[#1a1a18] hover:bg-[#eff6ff] hover:text-[#178FD8]'
                   }`}
                 >
                   Messages
                 </Link>
-                <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                <div className="rounded-2xl bg-white px-4 py-3 text-sm text-[#6b6b66]">
                   Connecté: {user?.firstName} {user?.lastName}
                 </div>
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-left text-sm font-semibold text-slate-700 hover:border-blue-300 hover:text-blue-700"
+                  className="w-full rounded-2xl border border-[#d3d1c7] bg-white px-4 py-3 text-left text-sm font-semibold text-[#1a1a18] hover:border-[#178FD8] hover:text-[#178FD8]"
                 >
                   Déconnexion
                 </button>
@@ -214,14 +224,14 @@ export function NavBar() {
                 <Link
                   href="/login"
                   onClick={closeMobileMenu}
-                  className="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700"
+                  className="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-[#1a1a18] hover:bg-[#eff6ff] hover:text-[#178FD8]"
                 >
                   Connexion
                 </Link>
                 <Link
                   href="/register"
                   onClick={closeMobileMenu}
-                  className="rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"
+                  className="rounded-2xl bg-[#178FD8] px-4 py-3 text-sm font-semibold text-white hover:bg-[#0f75b5]"
                 >
                   Rejoindre
                 </Link>

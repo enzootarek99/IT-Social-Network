@@ -48,7 +48,7 @@ export default function AdminLoginPage() {
           <p className="text-sm font-semibold uppercase tracking-[0.35em] text-blue-300">
             Back-office
           </p>
-          <h1 className="mt-5 text-5xl font-black leading-tight">IT Social Network Admin</h1>
+          <h1 className="mt-5 text-5xl font-black leading-tight">NexusIT Admin</h1>
           <p className="mt-5 max-w-xl text-slate-300">
             Espace séparé pour superviser les utilisateurs, contenus, missions et événements.
           </p>

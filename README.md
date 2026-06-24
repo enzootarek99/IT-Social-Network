@@ -1,6 +1,6 @@
-# IT Social Network
+# NexusIT
 
-A modern social network platform designed specifically for IT professionals. Connect, share, collaborate, and grow your career in the tech industry.
+A modern platform for IT professionals, students, freelancers and tech communities. Connect, share, collaborate, join activities and grow your career.
 
 ## Features
 

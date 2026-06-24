@@ -4,8 +4,8 @@ import { NavBar } from '@/components/navigation/NavBar';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
-  title: 'IT Social Network',
-  description: 'A social platform for IT professionals, freelancers and tech events.',
+  title: 'NexusIT',
+  description: 'Réseau professionnel IT pour profils, activités, freelance et communauté tech.',
 };
 
 export default function RootLayout({

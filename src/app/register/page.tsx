@@ -35,14 +35,14 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center py-12 px-4">
       <div className="w-full">
         <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-white mb-2">IT Social Network</h1>
+          <h1 className="text-4xl font-bold text-white mb-2">NexusIT</h1>
           <p className="text-blue-100">Rejoignez la communauté des professionnels IT</p>
         </div>
 
         <RegisterForm onSubmit={handleRegister} isLoading={isLoading} error={error} />
 
         <p className="mt-8 text-center text-blue-100 text-sm">
-          © 2024 IT Social Network. All rights reserved.
+          © 2026 NexusIT. All rights reserved.
         </p>
       </div>
     </div>

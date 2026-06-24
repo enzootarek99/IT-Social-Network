@@ -170,14 +170,14 @@ async function main() {
     lastName: 'User',
     title: 'Full Stack Developer',
     bio: 'Développeur full stack passionné par les produits SaaS, Next.js et PostgreSQL.',
-    company: 'IT Social Network',
+    company: 'NexusIT',
     location: 'Tunis, TN',
     website: 'https://example.com',
     skills: ['Next.js', 'TypeScript', 'Prisma', 'PostgreSQL'],
     experience: [
       {
         role: 'Full Stack Developer',
-        company: 'IT Social Network',
+        company: 'NexusIT',
         period: '2023 - Aujourd’hui',
         description:
           'Construction de produits SaaS avec Next.js, Prisma, PostgreSQL et intégrations API.',
@@ -208,15 +208,15 @@ async function main() {
     firstName: 'Admin',
     lastName: 'IT',
     title: 'Platform Administrator',
-    bio: 'Compte administrateur pour superviser la plateforme IT Social Network.',
-    company: 'IT Social Network',
+    bio: 'Compte administrateur pour superviser la plateforme NexusIT.',
+    company: 'NexusIT',
     location: 'Remote',
     website: 'https://example.com/admin',
     skills: ['Moderation', 'Security', 'Community'],
     experience: [
       {
         role: 'Platform Administrator',
-        company: 'IT Social Network',
+        company: 'NexusIT',
         period: '2026 - Aujourd’hui',
         description: 'Gestion des utilisateurs, contenus, missions et événements.',
       },
