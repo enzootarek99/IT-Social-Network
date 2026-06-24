@@ -3,14 +3,15 @@ import { getAuthUser } from '@/lib/auth';
 import prisma from '@/lib/db';
 
 type RouteContext = {
-  params: {
+  params: Promise<{
     postId: string;
-  };
+  }>;
 };
 
-export async function POST(request: NextRequest, { params }: RouteContext) {
+export async function POST(request: NextRequest, context: RouteContext) {
   try {
     const user = await getAuthUser(request);
+    const { postId } = await context.params;
 
     if (!user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
@@ -19,7 +20,7 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
     const existingLike = await prisma.like.findUnique({
       where: {
         postId_userId: {
-          postId: params.postId,
+          postId,
           userId: user.id,
         },
       },
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
 
     await prisma.like.create({
       data: {
-        postId: params.postId,
+        postId,
         userId: user.id,
       },
     });

@@ -4,14 +4,15 @@ import prisma from '@/lib/db';
 import { requireString } from '@/lib/parsers';
 
 type RouteContext = {
-  params: {
+  params: Promise<{
     opportunityId: string;
-  };
+  }>;
 };
 
-export async function POST(request: NextRequest, { params }: RouteContext) {
+export async function POST(request: NextRequest, context: RouteContext) {
   try {
     const user = await getAuthUser(request);
+    const { opportunityId } = await context.params;
 
     if (!user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
@@ -20,7 +21,7 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
     const body = await request.json();
     const application = await prisma.opportunityApplication.create({
       data: {
-        opportunityId: params.opportunityId,
+        opportunityId,
         applicantId: user.id,
         message: requireString(body.message, 'message'),
       },
