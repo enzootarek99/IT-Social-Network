@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts';
 
 const links = [
@@ -16,6 +17,27 @@ export function NavBar() {
   const pathname = usePathname();
   const router = useRouter();
   const { isAuthenticated, logout, user } = useAuth();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    async function loadUnreadCount() {
+      if (!isAuthenticated) {
+        setUnreadCount(0);
+        return;
+      }
+
+      const response = await fetch('/api/notifications', { cache: 'no-store' });
+
+      if (!response.ok) {
+        return;
+      }
+
+      const data = await response.json();
+      setUnreadCount(data.unreadCount);
+    }
+
+    void loadUnreadCount();
+  }, [isAuthenticated, pathname]);
 
   const handleLogout = async () => {
     await logout();
@@ -48,6 +70,21 @@ export function NavBar() {
         <div className="flex items-center gap-3">
           {isAuthenticated ? (
             <>
+              <Link
+                href="/notifications"
+                className={`relative rounded-full px-4 py-2 text-sm font-medium ${
+                  pathname === '/notifications'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-700 hover:text-blue-700'
+                }`}
+              >
+                Notifications
+                {unreadCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-xs font-bold text-white">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </Link>
               <span className="hidden text-sm text-slate-600 sm:inline">
                 {user?.firstName} {user?.lastName}
               </span>

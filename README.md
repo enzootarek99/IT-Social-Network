@@ -9,6 +9,7 @@ A modern social network platform designed specifically for IT professionals. Con
 - **Network discovery** - Search IT professionals and follow/unfollow profiles.
 - **Freelance Marketplace** - Find, publish, inspect and apply to freelance opportunities.
 - **Events** - Discover, create, inspect and join IT events and meetups.
+- **Notifications** - Track follows, comments, applications and event participation.
 - **Authentication** - Register, login, logout and maintain sessions with JWT cookies.
 
 ## Tech Stack
@@ -120,6 +121,7 @@ IT-Social-Network/
 - `GET /api/events/[eventId]`
 - `POST /api/events/[eventId]/attend`
 - `GET|POST /api/follow`
+- `GET|PATCH /api/notifications`
 
 ## Main Pages
 
@@ -131,6 +133,7 @@ IT-Social-Network/
 - `/marketplace/[opportunityId]` - Opportunity details and received applications
 - `/events` - Community events
 - `/events/[eventId]` - Event details and attendee list
+- `/notifications` - Activity notifications and unread state
 - `/login` and `/register` - Authentication
 
 ## Contributing

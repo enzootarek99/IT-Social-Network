@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
 import prisma from '@/lib/db';
+import { createNotification } from '@/lib/notifications';
 
 type RouteContext = {
   params: Promise<{
@@ -15,6 +16,18 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
     if (!user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+      select: {
+        organizerId: true,
+        title: true,
+      },
+    });
+
+    if (!event) {
+      return NextResponse.json({ error: 'Event not found' }, { status: 404 });
     }
 
     const existingAttendance = await prisma.eventAttendee.findUnique({
@@ -36,6 +49,13 @@ export async function POST(request: NextRequest, context: RouteContext) {
         eventId,
         userId: user.id,
       },
+    });
+    await createNotification({
+      recipientId: event.organizerId,
+      actorId: user.id,
+      type: 'event_attendance',
+      message: `${user.firstName} ${user.lastName} participe à "${event.title}".`,
+      link: `/events/${eventId}`,
     });
 
     return NextResponse.json({ attending: true });

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { requireString } from '@/lib/parsers';
+import { createNotification } from '@/lib/notifications';
 
 type RouteContext = {
   params: Promise<{
@@ -20,6 +21,18 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
     const body = await request.json();
     const message = requireString(body.message, 'message');
+    const opportunity = await prisma.freelanceOpportunity.findUnique({
+      where: { id: opportunityId },
+      select: {
+        authorId: true,
+        title: true,
+      },
+    });
+
+    if (!opportunity) {
+      return NextResponse.json({ error: 'Opportunity not found' }, { status: 404 });
+    }
+
     const existingApplication = await prisma.opportunityApplication.findUnique({
       where: {
         opportunityId_applicantId: {
@@ -42,6 +55,13 @@ export async function POST(request: NextRequest, context: RouteContext) {
         applicantId: user.id,
         message,
       },
+    });
+    await createNotification({
+      recipientId: opportunity.authorId,
+      actorId: user.id,
+      type: 'application',
+      message: `${user.firstName} ${user.lastName} a candidaté à "${opportunity.title}".`,
+      link: `/marketplace/${opportunityId}`,
     });
 
     return NextResponse.json({ application }, { status: 201 });

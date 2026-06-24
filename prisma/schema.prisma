@@ -36,6 +36,8 @@ model User {
   applications     OpportunityApplication[]
   organizedEvents  Event[]                  @relation("EventOrganizer")
   eventAttendances EventAttendee[]
+  notifications    Notification[]           @relation("NotificationRecipient")
+  notificationActs Notification[]           @relation("NotificationActor")
 }
 
 model Post {
@@ -145,4 +147,21 @@ model EventAttendee {
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([eventId, userId])
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  type        String
+  message     String
+  link        String?
+  read        Boolean  @default(false)
+  recipientId String
+  actorId     String?
+  createdAt   DateTime @default(now())
+
+  recipient User  @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  actor     User? @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([recipientId, read, createdAt])
+  @@index([actorId])
 }

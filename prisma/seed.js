@@ -240,6 +240,42 @@ async function main() {
     },
   });
 
+  await prisma.notification.deleteMany({
+    where: {
+      type: { in: ['follow', 'comment', 'application', 'event_attendance'] },
+      recipientId: { in: [demo.id, sarah.id] },
+    },
+  });
+
+  await prisma.notification.createMany({
+    data: [
+      {
+        recipientId: demo.id,
+        actorId: sarah.id,
+        type: 'comment',
+        message: 'Sarah Ben Ali a commenté votre publication.',
+        link: `/profile/${demo.username}`,
+        read: false,
+      },
+      {
+        recipientId: demo.id,
+        actorId: sarah.id,
+        type: 'application',
+        message: `Sarah Ben Ali a candidaté à "${opportunity.title}".`,
+        link: `/marketplace/${opportunity.id}`,
+        read: false,
+      },
+      {
+        recipientId: sarah.id,
+        actorId: demo.id,
+        type: 'event_attendance',
+        message: `Demo User participe à "${event.title}".`,
+        link: `/events/${event.id}`,
+        read: true,
+      },
+    ],
+  });
+
   console.log('Seed data ready.');
   console.log('Demo login: demo@example.com / password123');
 }
