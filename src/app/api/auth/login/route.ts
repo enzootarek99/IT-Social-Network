@@ -2,9 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { attachAuthCookie, publicUserSelect, signAuthToken, verifyPassword } from '@/lib/auth';
 import { getDatabaseSetupErrorMessage } from '@/lib/api-errors';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request.headers);
+    const rateLimit = checkRateLimit(`login:${ip}`, 10, 60 * 1000);
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Trop de tentatives. Réessayez dans une minute.' },
+        { status: 429 },
+      );
+    }
+
     const body = await request.json();
     const { email, password } = body;
     const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';

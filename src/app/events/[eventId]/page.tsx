@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useAuth, type AuthUser } from '@/contexts';
 import { formatDate } from '@/lib/utils';
 
@@ -32,9 +32,20 @@ type EventDetail = {
 
 export default function EventDetailPage() {
   const params = useParams<{ eventId: string }>();
+  const router = useRouter();
   const { isAuthenticated } = useAuth();
   const [event, setEvent] = useState<EventDetail | null>(null);
+  const [editForm, setEditForm] = useState({
+    title: '',
+    description: '',
+    location: '',
+    startsAt: '',
+    endsAt: '',
+    online: false,
+    url: '',
+  });
   const [error, setError] = useState<string>();
+  const [status, setStatus] = useState<string>();
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -50,6 +61,15 @@ export default function EventDetailPage() {
       }
 
       setEvent(data.event);
+      setEditForm({
+        title: data.event.title,
+        description: data.event.description,
+        location: data.event.location,
+        startsAt: new Date(data.event.startsAt).toISOString().slice(0, 16),
+        endsAt: data.event.endsAt ? new Date(data.event.endsAt).toISOString().slice(0, 16) : '',
+        online: data.event.online,
+        url: data.event.url || '',
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Événement introuvable');
     } finally {
@@ -92,6 +112,54 @@ export default function EventDetailPage() {
       setError(err instanceof Error ? err.message : 'Participation impossible');
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const handleUpdateEvent = async (submitEvent: FormEvent<HTMLFormElement>) => {
+    submitEvent.preventDefault();
+
+    if (!event) {
+      return;
+    }
+
+    try {
+      setStatus(undefined);
+      setError(undefined);
+      const response = await fetch(`/api/events/${event.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editForm),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Modification impossible');
+      }
+
+      setEvent((current) => (current ? { ...current, ...data.event } : current));
+      setStatus('Événement mis à jour.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Modification impossible');
+    }
+  };
+
+  const handleDeleteEvent = async () => {
+    if (!event || !confirm('Supprimer cet événement ?')) {
+      return;
+    }
+
+    try {
+      setError(undefined);
+      const response = await fetch(`/api/events/${event.id}`, { method: 'DELETE' });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Suppression impossible');
+      }
+
+      router.push('/events');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Suppression impossible');
     }
   };
 
@@ -165,6 +233,76 @@ export default function EventDetailPage() {
         </section>
 
         <aside className="space-y-6">
+          {event.isOrganizer && (
+            <section className="rounded-3xl bg-white p-6 shadow-soft">
+              <h2 className="text-xl font-bold text-slate-900">Gérer l’événement</h2>
+              <form onSubmit={handleUpdateEvent} className="mt-4 space-y-3">
+                <input
+                  value={editForm.title}
+                  onChange={(inputEvent) => setEditForm((current) => ({ ...current, title: inputEvent.target.value }))}
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500"
+                  placeholder="Titre"
+                />
+                <textarea
+                  value={editForm.description}
+                  onChange={(inputEvent) =>
+                    setEditForm((current) => ({ ...current, description: inputEvent.target.value }))
+                  }
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500"
+                  rows={4}
+                  placeholder="Description"
+                />
+                <input
+                  value={editForm.location}
+                  onChange={(inputEvent) => setEditForm((current) => ({ ...current, location: inputEvent.target.value }))}
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500"
+                  placeholder="Lieu"
+                />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <input
+                    type="datetime-local"
+                    value={editForm.startsAt}
+                    onChange={(inputEvent) => setEditForm((current) => ({ ...current, startsAt: inputEvent.target.value }))}
+                    className="rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500"
+                  />
+                  <input
+                    type="datetime-local"
+                    value={editForm.endsAt}
+                    onChange={(inputEvent) => setEditForm((current) => ({ ...current, endsAt: inputEvent.target.value }))}
+                    className="rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500"
+                  />
+                </div>
+                <input
+                  value={editForm.url}
+                  onChange={(inputEvent) => setEditForm((current) => ({ ...current, url: inputEvent.target.value }))}
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500"
+                  placeholder="Lien"
+                />
+                <label className="flex items-center gap-3 text-sm text-slate-700">
+                  <input
+                    type="checkbox"
+                    checked={editForm.online}
+                    onChange={(inputEvent) => setEditForm((current) => ({ ...current, online: inputEvent.target.checked }))}
+                  />
+                  Événement en ligne
+                </label>
+                <div className="flex flex-wrap gap-3">
+                  <button className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+                    Enregistrer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDeleteEvent}
+                    className="rounded-full border border-red-200 px-5 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
+                  >
+                    Supprimer
+                  </button>
+                </div>
+                {status && <p className="text-sm text-green-700">{status}</p>}
+              </form>
+            </section>
+          )}
+
           <section className="rounded-3xl bg-white p-6 shadow-soft">
             <h2 className="text-xl font-bold text-slate-900">Participer</h2>
             {event.url && (

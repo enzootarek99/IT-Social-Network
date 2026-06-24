@@ -7,17 +7,25 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const q = searchParams.get('q')?.trim();
+    const skill = searchParams.get('skill')?.trim();
+    const remote = searchParams.get('remote');
+    const contractType = searchParams.get('contractType')?.trim();
 
     const opportunities = await prisma.freelanceOpportunity.findMany({
-      where: q
-        ? {
-            OR: [
-              { title: { contains: q, mode: 'insensitive' } },
-              { company: { contains: q, mode: 'insensitive' } },
-              { description: { contains: q, mode: 'insensitive' } },
-            ],
-          }
-        : undefined,
+      where: {
+        ...(q
+          ? {
+              OR: [
+                { title: { contains: q, mode: 'insensitive' } },
+                { company: { contains: q, mode: 'insensitive' } },
+                { description: { contains: q, mode: 'insensitive' } },
+              ],
+            }
+          : {}),
+        ...(skill ? { skills: { has: skill } } : {}),
+        ...(remote === 'true' ? { remote: true } : remote === 'false' ? { remote: false } : {}),
+        ...(contractType ? { contractType: { contains: contractType, mode: 'insensitive' } } : {}),
+      },
       orderBy: { createdAt: 'desc' },
       include: {
         author: { select: publicUserSelect },

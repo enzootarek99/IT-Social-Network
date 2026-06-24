@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useAuth, type AuthUser } from '@/contexts';
 import { formatDate } from '@/lib/utils';
 
@@ -38,15 +38,25 @@ export default function MarketplacePage() {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [form, setForm] = useState(emptyForm);
   const [query, setQuery] = useState('');
+  const [skillFilter, setSkillFilter] = useState('');
+  const [remoteFilter, setRemoteFilter] = useState('');
+  const [contractTypeFilter, setContractTypeFilter] = useState('');
   const [applicationMessages, setApplicationMessages] = useState<Record<string, string>>({});
   const [applicationStatus, setApplicationStatus] = useState<Record<string, string>>({});
   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState(true);
 
-  const loadOpportunities = async (search = '') => {
+  const loadOpportunities = useCallback(async (search = query) => {
     try {
       setIsLoading(true);
-      const suffix = search ? `?q=${encodeURIComponent(search)}` : '';
+      const params = new URLSearchParams();
+
+      if (search) params.set('q', search);
+      if (skillFilter) params.set('skill', skillFilter);
+      if (remoteFilter) params.set('remote', remoteFilter);
+      if (contractTypeFilter) params.set('contractType', contractTypeFilter);
+
+      const suffix = params.toString() ? `?${params.toString()}` : '';
       const response = await fetch(`/api/opportunities${suffix}`, { cache: 'no-store' });
       const data = await response.json();
 
@@ -60,11 +70,11 @@ export default function MarketplacePage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [contractTypeFilter, query, remoteFilter, skillFilter]);
 
   useEffect(() => {
     void loadOpportunities();
-  }, []);
+  }, [loadOpportunities]);
 
   const updateForm = (field: keyof typeof emptyForm, value: string | boolean) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -229,7 +239,7 @@ export default function MarketplacePage() {
 
         <section>
           <form
-            className="mb-6 flex gap-3"
+            className="mb-6 grid gap-3 rounded-3xl bg-white p-4 shadow-soft md:grid-cols-5"
             onSubmit={(event) => {
               event.preventDefault();
               void loadOpportunities(query);
@@ -238,10 +248,31 @@ export default function MarketplacePage() {
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              className="flex-1 rounded-full border border-slate-200 px-5 py-3 focus:border-blue-500"
+              className="rounded-full border border-slate-200 px-5 py-3 focus:border-blue-500 md:col-span-2"
               placeholder="Rechercher une mission"
             />
-            <button className="rounded-full bg-slate-900 px-5 py-3 font-semibold text-white hover:bg-slate-800">
+            <input
+              value={skillFilter}
+              onChange={(event) => setSkillFilter(event.target.value)}
+              className="rounded-full border border-slate-200 px-5 py-3 focus:border-blue-500"
+              placeholder="Compétence"
+            />
+            <select
+              value={remoteFilter}
+              onChange={(event) => setRemoteFilter(event.target.value)}
+              className="rounded-full border border-slate-200 px-5 py-3 focus:border-blue-500"
+            >
+              <option value="">Remote / site</option>
+              <option value="true">Remote</option>
+              <option value="false">Sur site</option>
+            </select>
+            <input
+              value={contractTypeFilter}
+              onChange={(event) => setContractTypeFilter(event.target.value)}
+              className="rounded-full border border-slate-200 px-5 py-3 focus:border-blue-500"
+              placeholder="Type"
+            />
+            <button className="rounded-full bg-slate-900 px-5 py-3 font-semibold text-white hover:bg-slate-800 md:col-span-5">
               Rechercher
             </button>
           </form>

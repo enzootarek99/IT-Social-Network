@@ -3,9 +3,31 @@ import { getAuthUser, publicUserSelect } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { requireString } from '@/lib/parsers';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const q = searchParams.get('q')?.trim();
+    const online = searchParams.get('online');
+    const timeframe = searchParams.get('timeframe') || 'upcoming';
+
     const events = await prisma.event.findMany({
+      where: {
+        ...(q
+          ? {
+              OR: [
+                { title: { contains: q, mode: 'insensitive' } },
+                { description: { contains: q, mode: 'insensitive' } },
+                { location: { contains: q, mode: 'insensitive' } },
+              ],
+            }
+          : {}),
+        ...(online === 'true' ? { online: true } : online === 'false' ? { online: false } : {}),
+        ...(timeframe === 'past'
+          ? { startsAt: { lt: new Date() } }
+          : timeframe === 'all'
+            ? {}
+            : { startsAt: { gte: new Date() } }),
+      },
       orderBy: { startsAt: 'asc' },
       include: {
         organizer: { select: publicUserSelect },

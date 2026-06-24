@@ -49,6 +49,13 @@ export function Feed() {
           <PostCard
             key={post.id}
             post={post}
+            onUpdated={(updatedPost) =>
+              setPosts((current) =>
+                current.map((currentPost) =>
+                  currentPost.id === updatedPost.id ? updatedPost : currentPost,
+                ),
+              )
+            }
             onDeleted={(postId) =>
               setPosts((current) => current.filter((currentPost) => currentPost.id !== postId))
             }

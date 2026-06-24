@@ -3,9 +3,20 @@ import prisma from '@/lib/db';
 import { attachAuthCookie, hashPassword, publicUserSelect, signAuthToken } from '@/lib/auth';
 import { isValidEmail } from '@/lib/utils';
 import { getDatabaseSetupErrorMessage } from '@/lib/api-errors';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request.headers);
+    const rateLimit = checkRateLimit(`register:${ip}`, 5, 60 * 1000);
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Trop de créations de compte. Réessayez dans une minute.' },
+        { status: 429 },
+      );
+    }
+
     const body = await request.json();
     const { email, username, password, firstName, lastName } = body;
     const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser, publicUserSelect } from '@/lib/auth';
 import prisma from '@/lib/db';
+import { requireString, toStringArray } from '@/lib/parsers';
 
 type RouteContext = {
   params: Promise<{
@@ -64,5 +65,90 @@ export async function GET(request: NextRequest, context: RouteContext) {
   } catch (error) {
     console.error('Error fetching opportunity:', error);
     return NextResponse.json({ error: 'Failed to fetch opportunity' }, { status: 500 });
+  }
+}
+
+export async function PATCH(request: NextRequest, context: RouteContext) {
+  try {
+    const user = await getAuthUser(request);
+    const { opportunityId } = await context.params;
+
+    if (!user) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    const opportunity = await prisma.freelanceOpportunity.findUnique({
+      where: { id: opportunityId },
+      select: { authorId: true },
+    });
+
+    if (!opportunity) {
+      return NextResponse.json({ error: 'Opportunity not found' }, { status: 404 });
+    }
+
+    if (opportunity.authorId !== user.id) {
+      return NextResponse.json({ error: 'You can only edit your own opportunities' }, { status: 403 });
+    }
+
+    const body = await request.json();
+    const updatedOpportunity = await prisma.freelanceOpportunity.update({
+      where: { id: opportunityId },
+      data: {
+        title: requireString(body.title, 'title'),
+        company: requireString(body.company, 'company'),
+        description: requireString(body.description, 'description'),
+        budget: requireString(body.budget, 'budget'),
+        location: requireString(body.location, 'location'),
+        remote: Boolean(body.remote ?? true),
+        contractType: typeof body.contractType === 'string' ? body.contractType : 'Mission',
+        skills: toStringArray(body.skills),
+      },
+      include: {
+        author: { select: publicUserSelect },
+        _count: { select: { applications: true } },
+      },
+    });
+
+    return NextResponse.json({ opportunity: updatedOpportunity });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to update opportunity';
+    const status = message.includes('required') ? 400 : 500;
+
+    if (status === 500) {
+      console.error('Error updating opportunity:', error);
+    }
+
+    return NextResponse.json({ error: message }, { status });
+  }
+}
+
+export async function DELETE(request: NextRequest, context: RouteContext) {
+  try {
+    const user = await getAuthUser(request);
+    const { opportunityId } = await context.params;
+
+    if (!user) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    const opportunity = await prisma.freelanceOpportunity.findUnique({
+      where: { id: opportunityId },
+      select: { authorId: true },
+    });
+
+    if (!opportunity) {
+      return NextResponse.json({ error: 'Opportunity not found' }, { status: 404 });
+    }
+
+    if (opportunity.authorId !== user.id) {
+      return NextResponse.json({ error: 'You can only delete your own opportunities' }, { status: 403 });
+    }
+
+    await prisma.freelanceOpportunity.delete({ where: { id: opportunityId } });
+
+    return NextResponse.json({ deleted: true });
+  } catch (error) {
+    console.error('Error deleting opportunity:', error);
+    return NextResponse.json({ error: 'Failed to delete opportunity' }, { status: 500 });
   }
 }

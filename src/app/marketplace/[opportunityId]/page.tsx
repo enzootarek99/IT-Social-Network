@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useAuth, type AuthUser } from '@/contexts';
 import { formatDate } from '@/lib/utils';
 
@@ -35,8 +35,19 @@ type OpportunityDetail = {
 
 export default function OpportunityDetailPage() {
   const params = useParams<{ opportunityId: string }>();
+  const router = useRouter();
   const { isAuthenticated } = useAuth();
   const [opportunity, setOpportunity] = useState<OpportunityDetail | null>(null);
+  const [editForm, setEditForm] = useState({
+    title: '',
+    company: '',
+    description: '',
+    skills: '',
+    budget: '',
+    location: '',
+    contractType: '',
+    remote: true,
+  });
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState<string>();
   const [error, setError] = useState<string>();
@@ -57,6 +68,16 @@ export default function OpportunityDetailPage() {
       }
 
       setOpportunity(data.opportunity);
+      setEditForm({
+        title: data.opportunity.title,
+        company: data.opportunity.company,
+        description: data.opportunity.description,
+        skills: data.opportunity.skills.join(', '),
+        budget: data.opportunity.budget,
+        location: data.opportunity.location,
+        contractType: data.opportunity.contractType,
+        remote: data.opportunity.remote,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Mission introuvable');
     } finally {
@@ -97,6 +118,51 @@ export default function OpportunityDetailPage() {
       setError(err instanceof Error ? err.message : 'Candidature impossible');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleUpdateOpportunity = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    try {
+      setStatus(undefined);
+      setError(undefined);
+      const response = await fetch(`/api/opportunities/${params.opportunityId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editForm),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Modification impossible');
+      }
+
+      setOpportunity((current) => (current ? { ...current, ...data.opportunity } : current));
+      setStatus('Mission mise à jour.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Modification impossible');
+    }
+  };
+
+  const handleDeleteOpportunity = async () => {
+    if (!confirm('Supprimer cette mission ?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/opportunities/${params.opportunityId}`, {
+        method: 'DELETE',
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Suppression impossible');
+      }
+
+      router.push('/marketplace');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Suppression impossible');
     }
   };
 
@@ -227,6 +293,81 @@ export default function OpportunityDetailPage() {
             {status && <p className="mt-4 text-sm text-green-700">{status}</p>}
             {error && <p className="mt-4 text-sm text-red-700">{error}</p>}
           </section>
+
+          {opportunity.isAuthor && (
+            <section className="rounded-3xl bg-white p-6 shadow-soft">
+              <h2 className="text-xl font-bold text-slate-900">Gérer la mission</h2>
+              <form onSubmit={handleUpdateOpportunity} className="mt-4 space-y-3">
+                <input
+                  value={editForm.title}
+                  onChange={(event) => setEditForm((current) => ({ ...current, title: event.target.value }))}
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500"
+                  placeholder="Titre"
+                />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <input
+                    value={editForm.company}
+                    onChange={(event) => setEditForm((current) => ({ ...current, company: event.target.value }))}
+                    className="rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500"
+                    placeholder="Entreprise"
+                  />
+                  <input
+                    value={editForm.budget}
+                    onChange={(event) => setEditForm((current) => ({ ...current, budget: event.target.value }))}
+                    className="rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500"
+                    placeholder="Budget"
+                  />
+                </div>
+                <textarea
+                  value={editForm.description}
+                  onChange={(event) => setEditForm((current) => ({ ...current, description: event.target.value }))}
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500"
+                  rows={4}
+                  placeholder="Description"
+                />
+                <input
+                  value={editForm.skills}
+                  onChange={(event) => setEditForm((current) => ({ ...current, skills: event.target.value }))}
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500"
+                  placeholder="Compétences"
+                />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <input
+                    value={editForm.location}
+                    onChange={(event) => setEditForm((current) => ({ ...current, location: event.target.value }))}
+                    className="rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500"
+                    placeholder="Localisation"
+                  />
+                  <input
+                    value={editForm.contractType}
+                    onChange={(event) => setEditForm((current) => ({ ...current, contractType: event.target.value }))}
+                    className="rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500"
+                    placeholder="Type"
+                  />
+                </div>
+                <label className="flex items-center gap-3 text-sm text-slate-700">
+                  <input
+                    type="checkbox"
+                    checked={editForm.remote}
+                    onChange={(event) => setEditForm((current) => ({ ...current, remote: event.target.checked }))}
+                  />
+                  Remote possible
+                </label>
+                <div className="flex flex-wrap gap-3">
+                  <button className="rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+                    Enregistrer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDeleteOpportunity}
+                    className="rounded-full border border-red-200 px-5 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              </form>
+            </section>
+          )}
 
           {opportunity.isAuthor && (
             <section className="rounded-3xl bg-white p-6 shadow-soft">

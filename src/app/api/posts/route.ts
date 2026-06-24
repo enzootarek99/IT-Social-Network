@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser, publicUserSelect } from '@/lib/auth';
 import prisma from '@/lib/db';
-import { requireString } from '@/lib/parsers';
+import { optionalUrl, requireString } from '@/lib/parsers';
 
 export async function GET() {
   try {
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     const post = await prisma.post.create({
       data: {
         content,
-        imageUrl: typeof body.imageUrl === 'string' ? body.imageUrl.trim() || null : null,
+        imageUrl: optionalUrl(body.imageUrl, 'imageUrl'),
         authorId: user.id,
       },
       include: {

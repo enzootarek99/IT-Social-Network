@@ -20,3 +20,21 @@ export function requireString(value: unknown, fieldName: string) {
 
   return value.trim();
 }
+
+export function optionalUrl(value: unknown, fieldName: string) {
+  if (typeof value !== 'string' || !value.trim()) {
+    return null;
+  }
+
+  try {
+    const url = new URL(value.trim());
+
+    if (!['http:', 'https:'].includes(url.protocol)) {
+      throw new Error();
+    }
+
+    return url.toString();
+  } catch {
+    throw new Error(`${fieldName} must be a valid URL`);
+  }
+}

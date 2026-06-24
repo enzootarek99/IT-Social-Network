@@ -5,6 +5,7 @@ A modern social network platform designed specifically for IT professionals. Con
 ## Features
 
 - **Feed** - Share text/image updates, projects and insights, like/comment, and delete your own posts.
+- **Global search and dashboard** - Search across the platform and track personal activity.
 - **Profile & CV** - Showcase skills, bio, company, location, experiences, education, portfolio projects and public profile pages.
 - **Network discovery** - Search IT professionals and follow/unfollow profiles.
 - **Freelance Marketplace** - Find, publish, inspect and apply to freelance opportunities.
@@ -139,24 +140,32 @@ IT-Social-Network/
 - `GET /api/auth/me`
 - `GET /api/users`
 - `GET|POST /api/posts`
+- `PATCH|DELETE /api/posts/[postId]`
 - `POST /api/posts/[postId]/like`
 - `POST /api/posts/[postId]/comments`
+- `PATCH|DELETE /api/posts/[postId]/comments/[commentId]`
 - `GET|PUT /api/profile`
 - `GET|POST /api/opportunities`
 - `GET /api/opportunities/[opportunityId]`
+- `PATCH|DELETE /api/opportunities/[opportunityId]`
 - `POST /api/opportunities/[opportunityId]/apply`
 - `GET|POST /api/events`
 - `GET /api/events/[eventId]`
+- `PATCH|DELETE /api/events/[eventId]`
 - `POST /api/events/[eventId]/attend`
 - `GET|POST /api/follow`
 - `GET|PATCH /api/notifications`
 - `GET|POST /api/conversations`
 - `GET|PATCH /api/conversations/[conversationId]`
 - `POST /api/conversations/[conversationId]/messages`
+- `GET /api/search`
+- `GET /api/dashboard`
 
 ## Main Pages
 
 - `/` - Home and feed
+- `/dashboard` - Authenticated activity dashboard
+- `/search` - Global search
 - `/network` - User discovery and follow/unfollow
 - `/profile` - Authenticated profile editor
 - `/profile/[username]` - Public profile page

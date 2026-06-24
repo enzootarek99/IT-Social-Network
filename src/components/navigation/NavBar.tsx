@@ -7,6 +7,8 @@ import { useAuth } from '@/contexts';
 
 const links = [
   { href: '/', label: 'Feed' },
+  { href: '/dashboard', label: 'Dashboard' },
+  { href: '/search', label: 'Recherche' },
   { href: '/network', label: 'Réseau' },
   { href: '/profile', label: 'Profil & CV' },
   { href: '/marketplace', label: 'Freelance' },

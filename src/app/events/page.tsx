@@ -34,6 +34,9 @@ export default function EventsPage() {
   const { isAuthenticated } = useAuth();
   const [events, setEvents] = useState<CommunityEvent[]>([]);
   const [form, setForm] = useState(emptyEventForm);
+  const [query, setQuery] = useState('');
+  const [onlineFilter, setOnlineFilter] = useState('');
+  const [timeframeFilter, setTimeframeFilter] = useState('upcoming');
   const [attendingEvents, setAttendingEvents] = useState<Record<string, boolean>>({});
   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState(true);
@@ -41,7 +44,13 @@ export default function EventsPage() {
   useEffect(() => {
     async function loadEvents() {
       try {
-        const response = await fetch('/api/events', { cache: 'no-store' });
+        const params = new URLSearchParams();
+
+        if (query) params.set('q', query);
+        if (onlineFilter) params.set('online', onlineFilter);
+        if (timeframeFilter) params.set('timeframe', timeframeFilter);
+
+        const response = await fetch(`/api/events?${params.toString()}`, { cache: 'no-store' });
         const data = await response.json();
 
         if (!response.ok) {
@@ -57,7 +66,7 @@ export default function EventsPage() {
     }
 
     void loadEvents();
-  }, []);
+  }, [onlineFilter, query, timeframeFilter]);
 
   const updateForm = (field: keyof typeof emptyEventForm, value: string | boolean) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -192,6 +201,36 @@ export default function EventsPage() {
         </section>
 
         <section className="space-y-5">
+          <form
+            className="grid gap-3 rounded-3xl bg-white p-4 shadow-soft md:grid-cols-4"
+            onSubmit={(event) => event.preventDefault()}
+          >
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              className="rounded-full border border-slate-200 px-5 py-3 focus:border-blue-500 md:col-span-2"
+              placeholder="Rechercher un événement"
+            />
+            <select
+              value={onlineFilter}
+              onChange={(event) => setOnlineFilter(event.target.value)}
+              className="rounded-full border border-slate-200 px-5 py-3 focus:border-blue-500"
+            >
+              <option value="">Tous les formats</option>
+              <option value="true">En ligne</option>
+              <option value="false">Présentiel</option>
+            </select>
+            <select
+              value={timeframeFilter}
+              onChange={(event) => setTimeframeFilter(event.target.value)}
+              className="rounded-full border border-slate-200 px-5 py-3 focus:border-blue-500"
+            >
+              <option value="upcoming">À venir</option>
+              <option value="past">Passés</option>
+              <option value="all">Tous</option>
+            </select>
+          </form>
+
           {isLoading ? (
             <div className="rounded-3xl bg-white p-8 text-center text-slate-500 shadow-soft">
               Chargement des événements...
