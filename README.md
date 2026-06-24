@@ -19,6 +19,7 @@ Most product pages are member-only: visitors can access login/register/admin-log
 - **Notifications** - Track follows, comments, applications and event participation.
 - **Private messaging** - Start direct conversations and exchange messages with network members.
 - **Admin panel** - WordPress-style back-office with access to users, posts, comments, missions, events, conversations, messages and notifications.
+- **Professional admin tools** - Role-based permissions, site settings, static page block editor, activity logs and reusable admin components.
 - **Naming votes** - Team voting page for platform name proposals.
 - **Authentication** - Register, login, logout and maintain sessions with JWT cookies.
 
@@ -132,6 +133,10 @@ npm run db:seed          # Seed demo users, posts, missions and events
 Seeded admin account:
 - Email: `admin@example.com`
 - Password: `admin123`
+
+## Admin documentation
+
+See [`ADMIN_GUIDE.md`](./ADMIN_GUIDE.md) for a non-technical guide to the back-office sections, roles, appearance customizer, block editor and activity logs.
 
 ## Project Structure
 

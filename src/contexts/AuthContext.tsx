@@ -15,6 +15,7 @@ export type AuthUser = {
   email: string;
   username: string;
   role?: string;
+  adminRole?: 'SUPER_ADMIN' | 'CONTENT_MANAGER' | 'MODERATOR' | 'SUPPORT' | null;
   firstName: string;
   lastName: string;
   title?: string | null;

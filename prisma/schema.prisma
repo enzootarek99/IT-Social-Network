@@ -7,12 +7,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum AdminRole {
+  SUPER_ADMIN
+  CONTENT_MANAGER
+  MODERATOR
+  SUPPORT
+}
+
 model User {
-  id         String   @id @default(cuid())
-  email      String   @unique
-  username   String   @unique
+  id         String     @id @default(cuid())
+  email      String     @unique
+  username   String     @unique
   password   String
-  role       String   @default("USER")
+  role       String     @default("USER")
+  adminRole  AdminRole?
   firstName  String
   lastName   String
   title      String?
@@ -21,12 +29,12 @@ model User {
   company    String?
   location   String?
   website    String?
-  skills     String[] @default([])
+  skills     String[]   @default([])
   experience Json?
   education  Json?
   portfolio  Json?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 
   posts              Post[]
   comments           Comment[]
@@ -36,6 +44,7 @@ model User {
   resolvedReports    Report[]                 @relation("ReportResolver")
   nameVotes          NameVote[]
   opportunityReviews OpportunityReview[]
+  adminLogs          AdminLog[]               @relation("AdminLogActor")
   followers          Follow[]                 @relation("UserFollowers")
   following          Follow[]                 @relation("UserFollowing")
   opportunities      FreelanceOpportunity[]   @relation("OpportunityAuthor")
@@ -261,4 +270,63 @@ model NameVote {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([name, userId])
+}
+
+model SiteSettings {
+  id              String   @id @default("default")
+  siteName        String   @default("NexusIT")
+  logoUrl         String?
+  primaryColor    String   @default("#4f8ef7")
+  accentColor     String   @default("#2dd4a0")
+  backgroundColor String   @default("#0a0a0d")
+  fontFamily      String   @default("Inter")
+  seoTitle        String   @default("NexusIT")
+  seoDescription  String   @default("Réseau professionnel IT")
+  socialLinks     Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model StaticPage {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  status    String   @default("DRAFT")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  blocks PageBlock[]
+}
+
+model PageBlock {
+  id        String   @id @default(cuid())
+  pageId    String
+  type      String
+  order     Int
+  content   Json
+  settings  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  page StaticPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@index([pageId, order])
+}
+
+model AdminLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  action     String
+  entityType String
+  entityId   String?
+  before     Json?
+  after      Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  actor User? @relation("AdminLogActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId, createdAt])
+  @@index([entityType, entityId])
+  @@index([action, createdAt])
 }

@@ -45,6 +45,7 @@ async function upsertUser(user) {
     update: {
       username: user.username,
       role: user.role || 'USER',
+      adminRole: user.adminRole,
       firstName: user.firstName,
       lastName: user.lastName,
       title: user.title,
@@ -165,6 +166,7 @@ async function main() {
     email: 'demo@example.com',
     username: 'demo',
     role: 'USER',
+    adminRole: null,
     password: 'password123',
     firstName: 'Demo',
     lastName: 'User',
@@ -204,6 +206,7 @@ async function main() {
     email: 'admin@example.com',
     username: 'admin',
     role: 'ADMIN',
+    adminRole: 'SUPER_ADMIN',
     password: 'admin123',
     firstName: 'Admin',
     lastName: 'IT',
@@ -468,6 +471,62 @@ async function main() {
         message: 'Sarah Ben Ali vous a envoyé un message.',
         link: `/messages?conversationId=${demoConversation.id}`,
         read: false,
+      },
+    ],
+  });
+
+  await prisma.siteSettings.upsert({
+    where: { id: 'default' },
+    update: {
+      siteName: 'NexusIT',
+      primaryColor: '#4f8ef7',
+      accentColor: '#2dd4a0',
+      backgroundColor: '#0a0a0d',
+      fontFamily: 'Inter',
+      seoTitle: 'NexusIT',
+      seoDescription: 'Réseau professionnel IT',
+    },
+    create: {
+      id: 'default',
+      siteName: 'NexusIT',
+      primaryColor: '#4f8ef7',
+      accentColor: '#2dd4a0',
+      backgroundColor: '#0a0a0d',
+      fontFamily: 'Inter',
+      seoTitle: 'NexusIT',
+      seoDescription: 'Réseau professionnel IT',
+    },
+  });
+
+  const aboutPage = await prisma.staticPage.upsert({
+    where: { slug: 'about' },
+    update: {
+      title: 'À propos de NexusIT',
+      status: 'PUBLISHED',
+    },
+    create: {
+      slug: 'about',
+      title: 'À propos de NexusIT',
+      status: 'PUBLISHED',
+    },
+  });
+
+  await prisma.pageBlock.deleteMany({ where: { pageId: aboutPage.id } });
+  await prisma.pageBlock.createMany({
+    data: [
+      {
+        pageId: aboutPage.id,
+        type: 'text',
+        order: 0,
+        content: { text: 'NexusIT connecte les professionnels, étudiants et freelancers IT.' },
+        settings: { align: 'left', size: 'md' },
+      },
+      {
+        pageId: aboutPage.id,
+        type: 'button',
+        order: 1,
+        content: { label: 'Rejoindre la communauté', href: '/register' },
+        settings: { variant: 'primary' },
       },
     ],
   });

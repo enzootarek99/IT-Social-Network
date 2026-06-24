@@ -191,6 +191,10 @@ export default function AdminPage() {
                 { href: '/marketplace', label: 'Freelance' },
                 { href: '/events', label: 'Événements' },
                 { href: '/messages', label: 'Messages' },
+                { href: '/admin/appearance', label: 'Apparence' },
+                { href: '/admin/pages', label: 'Pages statiques' },
+                { href: '/admin/roles', label: 'Rôles & permissions' },
+                { href: '/admin/logs', label: 'Logs & activité' },
                 { href: '/', label: 'Voir le site' },
               ].map((item) => (
                 <Link

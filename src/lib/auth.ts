@@ -10,6 +10,7 @@ export const publicUserSelect = {
   email: true,
   username: true,
   role: true,
+  adminRole: true,
   firstName: true,
   lastName: true,
   title: true,
@@ -64,9 +65,7 @@ export function getTokenFromRequest(request: NextRequest) {
   return cookieToken ?? bearerToken;
 }
 
-export async function getAuthUser(request: NextRequest) {
-  const token = getTokenFromRequest(request);
-
+export async function getAuthUserFromToken(token?: string) {
   if (!token) {
     return null;
   }
@@ -85,6 +84,11 @@ export async function getAuthUser(request: NextRequest) {
   } catch {
     return null;
   }
+}
+
+export async function getAuthUser(request: NextRequest) {
+  const token = getTokenFromRequest(request);
+  return getAuthUserFromToken(token);
 }
 
 export function attachAuthCookie(response: NextResponse, token: string) {
