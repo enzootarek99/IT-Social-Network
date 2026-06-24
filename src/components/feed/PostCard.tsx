@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
+import Link from 'next/link';
 import { useAuth } from '@/contexts';
 import { formatDate } from '@/lib/utils';
 import type { FeedComment, FeedPost } from './types';
@@ -88,9 +89,12 @@ export function PostCard({ post }: PostCardProps) {
           )}
         </div>
         <div className="min-w-0">
-          <h3 className="font-semibold text-slate-900">
+          <Link
+            href={`/profile/${post.author.username}`}
+            className="font-semibold text-slate-900 hover:text-blue-700"
+          >
             {post.author.firstName} {post.author.lastName}
-          </h3>
+          </Link>
           <p className="text-sm text-slate-500">
             {post.author.title || 'Professionnel IT'} · {formatDate(post.createdAt)}
           </p>
@@ -120,9 +124,12 @@ export function PostCard({ post }: PostCardProps) {
         <div className="mt-5 space-y-4 border-t border-slate-100 pt-5">
           {comments.map((comment) => (
             <div key={comment.id} className="rounded-2xl bg-slate-50 px-4 py-3">
-              <p className="text-sm font-semibold text-slate-900">
+              <Link
+                href={`/profile/${comment.author.username}`}
+                className="text-sm font-semibold text-slate-900 hover:text-blue-700"
+              >
                 {comment.author.firstName} {comment.author.lastName}
-              </p>
+              </Link>
               <p className="mt-1 text-sm text-slate-700">{comment.content}</p>
             </div>
           ))}

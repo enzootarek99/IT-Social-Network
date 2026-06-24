@@ -17,6 +17,22 @@ export async function GET(request: NextRequest) {
       where: username ? { username } : { id: currentUser!.id },
       select: {
         ...publicUserSelect,
+        posts: {
+          orderBy: { createdAt: 'desc' },
+          take: 5,
+          select: {
+            id: true,
+            content: true,
+            imageUrl: true,
+            createdAt: true,
+            _count: {
+              select: {
+                comments: true,
+                likes: true,
+              },
+            },
+          },
+        },
         _count: {
           select: {
             posts: true,

@@ -161,9 +161,12 @@ export default function NetworkPage() {
                       )}
                     </div>
                     <div className="min-w-0">
-                      <h2 className="font-bold text-slate-900">
+                      <Link
+                        href={`/profile/${user.username}`}
+                        className="font-bold text-slate-900 hover:text-blue-700"
+                      >
                         {user.firstName} {user.lastName}
-                      </h2>
+                      </Link>
                       <p className="text-sm text-blue-700">{user.title || 'Professionnel IT'}</p>
                       <p className="mt-1 text-xs text-slate-500">
                         @{user.username}
@@ -214,6 +217,12 @@ export default function NetworkPage() {
                   >
                     {user.followingByMe ? 'Ne plus suivre' : 'Suivre'}
                   </button>
+                  <Link
+                    href={`/profile/${user.username}`}
+                    className="mt-3 inline-flex w-full justify-center rounded-full border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:text-blue-700"
+                  >
+                    Voir le profil
+                  </Link>
                 </article>
               ))
             ) : (
