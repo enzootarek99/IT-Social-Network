@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { clearAuthCookie } from '@/lib/auth';
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const response = NextResponse.json(
       { message: 'Logout successful' },
       { status: 200 }
     );
 
-    // Clear the token cookie
-    response.cookies.delete('token');
-
-    return response;
+    return clearAuthCookie(response);
   } catch (error) {
     console.error('Error logging out:', error);
     return NextResponse.json(

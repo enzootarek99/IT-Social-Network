@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  username   String   @unique
+  password   String
+  firstName  String
+  lastName   String
+  title      String?
+  bio        String?
+  avatar     String?
+  company    String?
+  location   String?
+  website    String?
+  skills     String[] @default([])
+  experience Json?
+  education  Json?
+  portfolio  Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  posts            Post[]
+  comments         Comment[]
+  likes            Like[]
+  followers        Follow[]                 @relation("UserFollowers")
+  following        Follow[]                 @relation("UserFollowing")
+  opportunities    FreelanceOpportunity[]   @relation("OpportunityAuthor")
+  applications     OpportunityApplication[]
+  organizedEvents  Event[]                  @relation("EventOrganizer")
+  eventAttendances EventAttendee[]
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  content   String
+  imageUrl  String?
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments Comment[]
+  likes    Like[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  postId    String
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+}
+
+model FreelanceOpportunity {
+  id           String   @id @default(cuid())
+  title        String
+  company      String
+  description  String
+  skills       String[] @default([])
+  budget       String
+  location     String
+  remote       Boolean  @default(true)
+  contractType String   @default("Mission")
+  authorId     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  author       User                     @relation("OpportunityAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  applications OpportunityApplication[]
+}
+
+model OpportunityApplication {
+  id            String   @id @default(cuid())
+  message       String
+  opportunityId String
+  applicantId   String
+  createdAt     DateTime @default(now())
+
+  opportunity FreelanceOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  applicant   User                 @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+
+  @@unique([opportunityId, applicantId])
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  location    String
+  startsAt    DateTime
+  endsAt      DateTime?
+  online      Boolean   @default(false)
+  url         String?
+  organizerId String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  organizer User            @relation("EventOrganizer", fields: [organizerId], references: [id], onDelete: Cascade)
+  attendees EventAttendee[]
+}
+
+model EventAttendee {
+  id        String   @id @default(cuid())
+  eventId   String
+  userId    String
+  createdAt DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+}
