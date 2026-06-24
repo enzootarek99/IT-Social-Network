@@ -4,6 +4,26 @@ import Link from 'next/link';
 import { FormEvent, useEffect, useState } from 'react';
 import { useAuth, type AuthUser } from '@/contexts';
 
+type ExperienceItem = {
+  role: string;
+  company: string;
+  period: string;
+  description: string;
+};
+
+type EducationItem = {
+  degree: string;
+  school: string;
+  period: string;
+  description: string;
+};
+
+type PortfolioItem = {
+  title: string;
+  url: string;
+  description: string;
+};
+
 type ProfileUser = AuthUser & {
   _count?: {
     posts: number;
@@ -12,10 +32,37 @@ type ProfileUser = AuthUser & {
   };
 };
 
+const emptyExperience: ExperienceItem = {
+  role: '',
+  company: '',
+  period: '',
+  description: '',
+};
+
+const emptyEducation: EducationItem = {
+  degree: '',
+  school: '',
+  period: '',
+  description: '',
+};
+
+const emptyPortfolio: PortfolioItem = {
+  title: '',
+  url: '',
+  description: '',
+};
+
+function parseArray<T>(value: unknown): T[] {
+  return Array.isArray(value) ? (value as T[]) : [];
+}
+
 export default function ProfilePage() {
   const { isAuthenticated, isLoading, setUser } = useAuth();
   const [profile, setProfile] = useState<ProfileUser | null>(null);
   const [skillsText, setSkillsText] = useState('');
+  const [experience, setExperience] = useState<ExperienceItem[]>([]);
+  const [education, setEducation] = useState<EducationItem[]>([]);
+  const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
   const [status, setStatus] = useState<string>();
   const [error, setError] = useState<string>();
 
@@ -31,6 +78,9 @@ export default function ProfilePage() {
       if (response.ok) {
         setProfile(data.user);
         setSkillsText(data.user.skills.join(', '));
+        setExperience(parseArray<ExperienceItem>(data.user.experience));
+        setEducation(parseArray<EducationItem>(data.user.education));
+        setPortfolio(parseArray<PortfolioItem>(data.user.portfolio));
       } else {
         setError(data.error || 'Profil introuvable');
       }
@@ -41,6 +91,30 @@ export default function ProfilePage() {
 
   const updateField = (field: keyof AuthUser, value: string) => {
     setProfile((current) => (current ? { ...current, [field]: value } : current));
+  };
+
+  const updateExperience = (index: number, field: keyof ExperienceItem, value: string) => {
+    setExperience((current) =>
+      current.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, [field]: value } : item,
+      ),
+    );
+  };
+
+  const updateEducation = (index: number, field: keyof EducationItem, value: string) => {
+    setEducation((current) =>
+      current.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, [field]: value } : item,
+      ),
+    );
+  };
+
+  const updatePortfolio = (index: number, field: keyof PortfolioItem, value: string) => {
+    setPortfolio((current) =>
+      current.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, [field]: value } : item,
+      ),
+    );
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -66,6 +140,9 @@ export default function ProfilePage() {
           website: profile.website,
           avatar: profile.avatar,
           skills: skillsText,
+          experience,
+          education,
+          portfolio,
         }),
       });
       const data = await response.json();
@@ -224,6 +301,177 @@ export default function ProfilePage() {
                 placeholder="React, TypeScript, AWS, PostgreSQL"
               />
             </label>
+
+            <section className="mt-8 border-t border-slate-100 pt-6">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">Expériences</h3>
+                  <p className="text-sm text-slate-500">Ajoutez les postes clés de votre CV.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setExperience((current) => [...current, emptyExperience])}
+                  className="rounded-full border border-blue-200 px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50"
+                >
+                  Ajouter
+                </button>
+              </div>
+
+              <div className="mt-4 space-y-4">
+                {experience.map((item, index) => (
+                  <div key={index} className="rounded-2xl bg-slate-50 p-4">
+                    <div className="grid gap-4 sm:grid-cols-3">
+                      <input
+                        value={item.role}
+                        onChange={(event) => updateExperience(index, 'role', event.target.value)}
+                        className="rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500"
+                        placeholder="Poste"
+                      />
+                      <input
+                        value={item.company}
+                        onChange={(event) => updateExperience(index, 'company', event.target.value)}
+                        className="rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500"
+                        placeholder="Entreprise"
+                      />
+                      <input
+                        value={item.period}
+                        onChange={(event) => updateExperience(index, 'period', event.target.value)}
+                        className="rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500"
+                        placeholder="Période"
+                      />
+                    </div>
+                    <textarea
+                      value={item.description}
+                      onChange={(event) => updateExperience(index, 'description', event.target.value)}
+                      className="mt-3 w-full rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500"
+                      rows={3}
+                      placeholder="Missions, impact, technologies utilisées"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setExperience((current) => current.filter((_, itemIndex) => itemIndex !== index))
+                      }
+                      className="mt-2 text-sm font-semibold text-red-600 hover:text-red-700"
+                    >
+                      Supprimer cette expérience
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="mt-8 border-t border-slate-100 pt-6">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">Formations</h3>
+                  <p className="text-sm text-slate-500">Présentez diplômes, certifications ou bootcamps.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setEducation((current) => [...current, emptyEducation])}
+                  className="rounded-full border border-blue-200 px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50"
+                >
+                  Ajouter
+                </button>
+              </div>
+
+              <div className="mt-4 space-y-4">
+                {education.map((item, index) => (
+                  <div key={index} className="rounded-2xl bg-slate-50 p-4">
+                    <div className="grid gap-4 sm:grid-cols-3">
+                      <input
+                        value={item.degree}
+                        onChange={(event) => updateEducation(index, 'degree', event.target.value)}
+                        className="rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500"
+                        placeholder="Diplôme / certification"
+                      />
+                      <input
+                        value={item.school}
+                        onChange={(event) => updateEducation(index, 'school', event.target.value)}
+                        className="rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500"
+                        placeholder="École / organisme"
+                      />
+                      <input
+                        value={item.period}
+                        onChange={(event) => updateEducation(index, 'period', event.target.value)}
+                        className="rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500"
+                        placeholder="Période"
+                      />
+                    </div>
+                    <textarea
+                      value={item.description}
+                      onChange={(event) => updateEducation(index, 'description', event.target.value)}
+                      className="mt-3 w-full rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500"
+                      rows={3}
+                      placeholder="Spécialisation, projets ou apprentissages"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setEducation((current) => current.filter((_, itemIndex) => itemIndex !== index))
+                      }
+                      className="mt-2 text-sm font-semibold text-red-600 hover:text-red-700"
+                    >
+                      Supprimer cette formation
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="mt-8 border-t border-slate-100 pt-6">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">Portfolio</h3>
+                  <p className="text-sm text-slate-500">Ajoutez vos projets, articles ou réalisations.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setPortfolio((current) => [...current, emptyPortfolio])}
+                  className="rounded-full border border-blue-200 px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50"
+                >
+                  Ajouter
+                </button>
+              </div>
+
+              <div className="mt-4 space-y-4">
+                {portfolio.map((item, index) => (
+                  <div key={index} className="rounded-2xl bg-slate-50 p-4">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <input
+                        value={item.title}
+                        onChange={(event) => updatePortfolio(index, 'title', event.target.value)}
+                        className="rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500"
+                        placeholder="Titre du projet"
+                      />
+                      <input
+                        value={item.url}
+                        onChange={(event) => updatePortfolio(index, 'url', event.target.value)}
+                        className="rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500"
+                        placeholder="Lien"
+                      />
+                    </div>
+                    <textarea
+                      value={item.description}
+                      onChange={(event) => updatePortfolio(index, 'description', event.target.value)}
+                      className="mt-3 w-full rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500"
+                      rows={3}
+                      placeholder="Objectif, rôle, stack technique"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPortfolio((current) => current.filter((_, itemIndex) => itemIndex !== index))
+                      }
+                      className="mt-2 text-sm font-semibold text-red-600 hover:text-red-700"
+                    >
+                      Supprimer ce projet
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
 
             {status && <p className="mt-4 text-sm text-green-700">{status}</p>}
             {error && <p className="mt-4 text-sm text-red-700">{error}</p>}

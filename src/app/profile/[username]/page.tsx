@@ -17,6 +17,26 @@ type ProfilePost = {
   };
 };
 
+type ExperienceItem = {
+  role: string;
+  company: string;
+  period: string;
+  description: string;
+};
+
+type EducationItem = {
+  degree: string;
+  school: string;
+  period: string;
+  description: string;
+};
+
+type PortfolioItem = {
+  title: string;
+  url: string;
+  description: string;
+};
+
 type PublicProfile = AuthUser & {
   posts: ProfilePost[];
   _count: {
@@ -25,6 +45,10 @@ type PublicProfile = AuthUser & {
     following: number;
   };
 };
+
+function parseArray<T>(value: unknown): T[] {
+  return Array.isArray(value) ? (value as T[]) : [];
+}
 
 function initials(firstName: string, lastName: string) {
   return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
@@ -139,6 +163,9 @@ export default function PublicProfilePage() {
   }
 
   const isOwnProfile = user?.id === profile.id;
+  const experience = parseArray<ExperienceItem>(profile.experience);
+  const education = parseArray<EducationItem>(profile.education);
+  const portfolio = parseArray<PortfolioItem>(profile.portfolio);
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
@@ -221,6 +248,92 @@ export default function PublicProfilePage() {
         </aside>
 
         <section>
+          <div className="mb-8 space-y-6">
+            <section className="rounded-3xl bg-white p-6 shadow-soft">
+              <h2 className="text-2xl font-bold text-slate-900">Expériences</h2>
+              <div className="mt-5 space-y-5">
+                {experience.length > 0 ? (
+                  experience.map((item, index) => (
+                    <article key={`${item.company}-${item.role}-${index}`} className="border-l-4 border-blue-100 pl-4">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <h3 className="font-bold text-slate-900">{item.role || 'Poste'}</h3>
+                          <p className="text-sm text-blue-700">{item.company || 'Entreprise'}</p>
+                        </div>
+                        {item.period && (
+                          <span className="rounded-full bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-500">
+                            {item.period}
+                          </span>
+                        )}
+                      </div>
+                      {item.description && (
+                        <p className="mt-3 text-sm leading-6 text-slate-600">{item.description}</p>
+                      )}
+                    </article>
+                  ))
+                ) : (
+                  <p className="text-sm text-slate-500">Aucune expérience ajoutée.</p>
+                )}
+              </div>
+            </section>
+
+            <section className="rounded-3xl bg-white p-6 shadow-soft">
+              <h2 className="text-2xl font-bold text-slate-900">Formations</h2>
+              <div className="mt-5 space-y-5">
+                {education.length > 0 ? (
+                  education.map((item, index) => (
+                    <article key={`${item.school}-${item.degree}-${index}`} className="border-l-4 border-green-100 pl-4">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <h3 className="font-bold text-slate-900">{item.degree || 'Formation'}</h3>
+                          <p className="text-sm text-green-700">{item.school || 'Établissement'}</p>
+                        </div>
+                        {item.period && (
+                          <span className="rounded-full bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-500">
+                            {item.period}
+                          </span>
+                        )}
+                      </div>
+                      {item.description && (
+                        <p className="mt-3 text-sm leading-6 text-slate-600">{item.description}</p>
+                      )}
+                    </article>
+                  ))
+                ) : (
+                  <p className="text-sm text-slate-500">Aucune formation ajoutée.</p>
+                )}
+              </div>
+            </section>
+
+            <section className="rounded-3xl bg-white p-6 shadow-soft">
+              <h2 className="text-2xl font-bold text-slate-900">Portfolio</h2>
+              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                {portfolio.length > 0 ? (
+                  portfolio.map((item, index) => (
+                    <article key={`${item.title}-${index}`} className="rounded-2xl bg-slate-50 p-4">
+                      <h3 className="font-bold text-slate-900">{item.title || 'Projet'}</h3>
+                      {item.description && (
+                        <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
+                      )}
+                      {item.url && (
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-3 inline-flex text-sm font-semibold text-blue-700 hover:text-blue-900"
+                        >
+                          Voir le projet
+                        </a>
+                      )}
+                    </article>
+                  ))
+                ) : (
+                  <p className="text-sm text-slate-500 sm:col-span-2">Aucun projet ajouté.</p>
+                )}
+              </div>
+            </section>
+          </div>
+
           <div className="mb-6">
             <p className="text-sm font-semibold uppercase tracking-[0.25em] text-blue-700">
               Publications

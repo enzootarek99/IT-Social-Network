@@ -5,7 +5,7 @@ A modern social network platform designed specifically for IT professionals. Con
 ## Features
 
 - **Feed** - Share updates, projects and insights, like posts, and comment with the community.
-- **Profile & CV** - Showcase skills, bio, company, location, portfolio links and public profile pages.
+- **Profile & CV** - Showcase skills, bio, company, location, experiences, education, portfolio projects and public profile pages.
 - **Network discovery** - Search IT professionals and follow/unfollow profiles.
 - **Freelance Marketplace** - Find, publish, inspect and apply to freelance opportunities.
 - **Events** - Discover, create, inspect and join IT events and meetups.

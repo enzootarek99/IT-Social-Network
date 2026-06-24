@@ -20,6 +20,9 @@ async function upsertUser(user) {
       location: user.location,
       website: user.website,
       skills: user.skills,
+      experience: user.experience,
+      education: user.education,
+      portfolio: user.portfolio,
       password: await bcrypt.hash(user.password, 12),
     },
     create: {
@@ -103,6 +106,30 @@ async function main() {
     location: 'Tunis, TN',
     website: 'https://example.com',
     skills: ['Next.js', 'TypeScript', 'Prisma', 'PostgreSQL'],
+    experience: [
+      {
+        role: 'Full Stack Developer',
+        company: 'IT Social Network',
+        period: '2023 - Aujourd’hui',
+        description:
+          'Construction de produits SaaS avec Next.js, Prisma, PostgreSQL et intégrations API.',
+      },
+    ],
+    education: [
+      {
+        degree: 'Licence Informatique',
+        school: 'Université de Tunis',
+        period: '2018 - 2021',
+        description: 'Développement web, bases de données et architecture logicielle.',
+      },
+    ],
+    portfolio: [
+      {
+        title: 'Starter SaaS Next.js',
+        url: 'https://example.com/saas-starter',
+        description: 'Starter kit auth, dashboard, Prisma et Tailwind pour MVP B2B.',
+      },
+    ],
   });
 
   const sarah = await upsertUser({
@@ -117,6 +144,30 @@ async function main() {
     location: 'Remote',
     website: 'https://example.com/sarah',
     skills: ['AWS', 'Docker', 'Kubernetes', 'Terraform'],
+    experience: [
+      {
+        role: 'DevOps Engineer',
+        company: 'CloudOps Studio',
+        period: '2021 - Aujourd’hui',
+        description:
+          'Industrialisation CI/CD, observabilité, infrastructure as code et plateformes Kubernetes.',
+      },
+    ],
+    education: [
+      {
+        degree: 'AWS Solutions Architect',
+        school: 'Amazon Web Services',
+        period: '2022',
+        description: 'Architecture cloud, sécurité et optimisation des coûts.',
+      },
+    ],
+    portfolio: [
+      {
+        title: 'Playbook Observabilité',
+        url: 'https://example.com/sarah/observability',
+        description: 'Guide de mise en place logs, traces, métriques et alertes pour SaaS.',
+      },
+    ],
   });
 
   const malik = await upsertUser({
@@ -131,6 +182,30 @@ async function main() {
     location: 'Paris, FR',
     website: 'https://example.com/malik',
     skills: ['Python', 'Kafka', 'dbt', 'BigQuery'],
+    experience: [
+      {
+        role: 'Data Engineer',
+        company: 'DataWorks',
+        period: '2020 - Aujourd’hui',
+        description:
+          'Conception de pipelines data temps réel, modélisation analytique et plateformes cloud data.',
+      },
+    ],
+    education: [
+      {
+        degree: 'Master Data Engineering',
+        school: 'Université Paris Cité',
+        period: '2018 - 2020',
+        description: 'Systèmes distribués, data warehousing et machine learning appliqué.',
+      },
+    ],
+    portfolio: [
+      {
+        title: 'Pipeline Kafka vers BigQuery',
+        url: 'https://example.com/malik/kafka-bigquery',
+        description: 'Architecture streaming pour ingestion et transformation de données produit.',
+      },
+    ],
   });
 
   await prisma.follow.upsert({
