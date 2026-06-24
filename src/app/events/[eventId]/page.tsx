@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth, type AuthUser } from '@/contexts';
 import { formatDate } from '@/lib/utils';
 
@@ -38,7 +38,7 @@ export default function EventDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const loadEvent = async () => {
+  const loadEvent = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(undefined);
@@ -55,11 +55,11 @@ export default function EventDetailPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [params.eventId]);
 
   useEffect(() => {
     void loadEvent();
-  }, [params.eventId]);
+  }, [loadEvent]);
 
   const toggleAttendance = async () => {
     if (!event) {

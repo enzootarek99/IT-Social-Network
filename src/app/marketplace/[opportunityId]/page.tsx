@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useAuth, type AuthUser } from '@/contexts';
 import { formatDate } from '@/lib/utils';
@@ -43,7 +43,7 @@ export default function OpportunityDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const loadOpportunity = async () => {
+  const loadOpportunity = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(undefined);
@@ -62,11 +62,11 @@ export default function OpportunityDetailPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [params.opportunityId]);
 
   useEffect(() => {
     void loadOpportunity();
-  }, [params.opportunityId]);
+  }, [loadOpportunity]);
 
   const handleApply = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
