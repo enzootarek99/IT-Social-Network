@@ -93,6 +93,40 @@ async function findOrCreateEvent(data) {
   return prisma.event.create({ data });
 }
 
+async function findOrCreateConversation(userAId, userBId) {
+  const [participantAId, participantBId] = [userAId, userBId].sort();
+
+  return prisma.conversation.upsert({
+    where: {
+      participantAId_participantBId: {
+        participantAId,
+        participantBId,
+      },
+    },
+    update: {},
+    create: {
+      participantAId,
+      participantBId,
+    },
+  });
+}
+
+async function findOrCreateMessage(data) {
+  const existingMessage = await prisma.message.findFirst({
+    where: {
+      conversationId: data.conversationId,
+      senderId: data.senderId,
+      content: data.content,
+    },
+  });
+
+  if (existingMessage) {
+    return existingMessage;
+  }
+
+  return prisma.message.create({ data });
+}
+
 async function main() {
   const demo = await upsertUser({
     email: 'demo@example.com',
@@ -315,9 +349,29 @@ async function main() {
     },
   });
 
+  const demoConversation = await findOrCreateConversation(demo.id, sarah.id);
+  await findOrCreateMessage({
+    conversationId: demoConversation.id,
+    senderId: sarah.id,
+    content: 'Salut Demo, ton starter SaaS Next.js m’intéresse beaucoup.',
+    read: true,
+  });
+  await findOrCreateMessage({
+    conversationId: demoConversation.id,
+    senderId: demo.id,
+    content: 'Merci Sarah ! Je prépare une version avec CI/CD et monitoring intégré.',
+    read: true,
+  });
+  await findOrCreateMessage({
+    conversationId: demoConversation.id,
+    senderId: sarah.id,
+    content: 'Parfait, je peux t’aider sur la partie observabilité.',
+    read: false,
+  });
+
   await prisma.notification.deleteMany({
     where: {
-      type: { in: ['follow', 'comment', 'application', 'event_attendance'] },
+      type: { in: ['follow', 'comment', 'application', 'event_attendance', 'message'] },
       recipientId: { in: [demo.id, sarah.id] },
     },
   });
@@ -347,6 +401,14 @@ async function main() {
         message: `Demo User participe à "${event.title}".`,
         link: `/events/${event.id}`,
         read: true,
+      },
+      {
+        recipientId: demo.id,
+        actorId: sarah.id,
+        type: 'message',
+        message: 'Sarah Ben Ali vous a envoyé un message.',
+        link: `/messages?conversationId=${demoConversation.id}`,
+        read: false,
       },
     ],
   });

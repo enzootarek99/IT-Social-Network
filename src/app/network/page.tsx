@@ -223,6 +223,14 @@ export default function NetworkPage() {
                   >
                     Voir le profil
                   </Link>
+                  {isAuthenticated && (
+                    <Link
+                      href={`/messages?userId=${user.id}`}
+                      className="mt-3 inline-flex w-full justify-center rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
+                    >
+                      Contacter
+                    </Link>
+                  )}
                 </article>
               ))
             ) : (

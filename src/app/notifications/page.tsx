@@ -20,6 +20,7 @@ const typeLabels: Record<string, string> = {
   comment: 'Feed',
   application: 'Freelance',
   event_attendance: 'Événement',
+  message: 'Message',
 };
 
 export default function NotificationsPage() {

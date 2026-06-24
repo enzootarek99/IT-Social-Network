@@ -232,18 +232,26 @@ export default function PublicProfilePage() {
           )}
 
           {isAuthenticated && !isOwnProfile && (
-            <button
-              type="button"
-              disabled={isUpdating}
-              onClick={toggleFollow}
-              className={`mt-6 w-full rounded-full px-5 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500 ${
-                isFollowing
-                  ? 'border border-blue-200 bg-white text-blue-700 hover:bg-blue-50'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
-            >
-              {isFollowing ? 'Ne plus suivre' : 'Suivre'}
-            </button>
+            <div className="mt-6 space-y-3">
+              <button
+                type="button"
+                disabled={isUpdating}
+                onClick={toggleFollow}
+                className={`w-full rounded-full px-5 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500 ${
+                  isFollowing
+                    ? 'border border-blue-200 bg-white text-blue-700 hover:bg-blue-50'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+              >
+                {isFollowing ? 'Ne plus suivre' : 'Suivre'}
+              </button>
+              <Link
+                href={`/messages?userId=${profile.id}`}
+                className="inline-flex w-full justify-center rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800"
+              >
+                Contacter
+              </Link>
+            </div>
           )}
         </aside>
 

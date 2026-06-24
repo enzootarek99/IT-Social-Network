@@ -85,6 +85,16 @@ export function NavBar() {
                   </span>
                 )}
               </Link>
+              <Link
+                href="/messages"
+                className={`rounded-full px-4 py-2 text-sm font-medium ${
+                  pathname === '/messages'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-700 hover:text-blue-700'
+                }`}
+              >
+                Messages
+              </Link>
               <span className="hidden text-sm text-slate-600 sm:inline">
                 {user?.firstName} {user?.lastName}
               </span>
